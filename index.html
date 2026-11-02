@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="1:1 program for landing your first tech sales job in 90 days. No degree, no experience required. Run by a mid-market AE who did it at 19.">
+<title>No Degree AE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one dark column, 1120px max, sections separated by hairlines; the gold is spent only on the CTA, the guarantee and the numbers. */
+:root{
+  --bg:#0B0E14; --bg2:#10141C; --panel:#141923; --line:rgba(226,232,240,.08); --line2:rgba(226,232,240,.14);
+  --fg:#EEF1F6; --muted:#9AA4B5; --dim:#6B7486;
+  --gold:#E6B45A; --gold2:#F3CF85; --gold-ink:#1A1304;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Manrope",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+a{color:inherit}
+img{max-width:100%}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);letter-spacing:-.02em;text-wrap:balance;margin:0}
+h2{font-size:clamp(30px,4vw,44px);line-height:1.08;font-weight:700}
+h3{font-size:22px;line-height:1.25;font-weight:600}
+p{margin:0}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.muted{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:10px;background:var(--gold);color:var(--gold-ink);font-weight:700;font-size:16px;text-decoration:none;padding:16px 26px;border-radius:999px;border:1px solid transparent;transition:transform .15s ease,background .15s ease;white-space:nowrap}
+.btn:hover{background:var(--gold2);transform:translateY(-1px)}
+.btn:focus-visible,.ghost:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.btn svg{width:18px;height:18px}
+.ghost{display:inline-flex;align-items:center;gap:8px;color:var(--fg);text-decoration:none;font-weight:600;font-size:15px;padding:14px 4px;border-bottom:1px solid var(--line2)}
+.ghost:hover{border-color:var(--gold)}
+section{padding-block:clamp(64px,9vw,120px);border-top:1px solid var(--line)}
+.sec-head{display:grid;gap:14px;max-width:720px;margin-bottom:clamp(36px,5vw,56px)}
+.sec-head p{font-size:18px;color:var(--muted)}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(11,14,20,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:68px}
+.brand{font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:-.01em;text-decoration:none;display:flex;align-items:center;gap:10px}
+.brand i{width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px rgba(230,180,90,.18)}
+.navlinks{display:flex;gap:26px;font-size:15px;color:var(--muted)}
+.navlinks a{text-decoration:none}
+.navlinks a:hover{color:var(--fg)}
+.nav .btn{padding:11px 18px;font-size:14px}
+@media (max-width:760px){.navlinks{display:none}}
+
+/* hero */
+.hero{padding-block:clamp(72px,11vw,140px) clamp(48px,7vw,80px);border-top:0;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:1px;background:linear-gradient(90deg,transparent,var(--line2),transparent)}
+.hero .glow{position:absolute;top:-220px;left:50%;transform:translateX(-50%);width:900px;height:520px;max-width:100vw;border-radius:50%;background:radial-gradient(closest-side,rgba(230,180,90,.14),transparent 70%);pointer-events:none}
+.hero .wrap{position:relative;display:grid;gap:28px;justify-items:start}
+.hero .wrap>*{max-width:860px}
+.hero h1{font-size:clamp(40px,7vw,84px);line-height:.98;font-weight:800}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero .lede{font-size:clamp(18px,2vw,22px);color:var(--muted);max-width:640px;line-height:1.55}
+.hero .lede b{color:var(--fg);font-weight:600}
+.cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:22px;margin-top:6px}
+.fine{font-size:14px;color:var(--dim)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.chip{font-size:13px;color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:7px 13px;background:var(--bg2)}
+
+/* guarantee bar */
+.bar{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(230,180,90,.07),rgba(230,180,90,.02));padding-block:26px}
+.bar .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:14px 28px}
+.bar .eyebrow{flex:0 0 auto}
+.bar p{font-family:var(--display);font-size:clamp(18px,2.2vw,24px);font-weight:600;line-height:1.3;letter-spacing:-.01em;min-width:0}
+.bar p span{color:var(--gold)}
+.bar small{display:block;font-family:var(--body);font-size:14px;color:var(--muted);font-weight:500;margin-top:6px;letter-spacing:0}
+
+/* story */
+.story{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(32px,6vw,80px);align-items:start}
+.story .text{display:grid;gap:18px;font-size:18px;color:var(--muted);max-width:60ch}
+.story .text p b{color:var(--fg);font-weight:600}
+.story .text .now{color:var(--fg);font-weight:600;font-size:19px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line2);border:1px solid var(--line2);border-radius:18px;overflow:hidden}
+.stat{background:var(--panel);padding:24px 20px;display:grid;gap:6px;min-width:0}
+.stat b{font-family:var(--display);font-size:clamp(30px,3.4vw,42px);font-weight:800;line-height:1;color:var(--gold);font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--muted);line-height:1.35}
+.timeline{margin-top:22px;display:grid;gap:0;border-left:1px solid var(--line2);padding-left:22px;position:relative}
+.timeline li{list-style:none;position:relative;padding-bottom:18px;font-size:15px;color:var(--muted)}
+.timeline li:last-child{padding-bottom:0}
+.timeline li::before{content:"";position:absolute;left:-27px;top:9px;width:9px;height:9px;border-radius:50%;background:var(--bg);border:2px solid var(--dim)}
+.timeline li.hot::before{background:var(--gold);border-color:var(--gold)}
+.timeline li b{color:var(--fg);font-weight:600;display:block}
+@media (max-width:860px){.story{grid-template-columns:1fr}}
+@media (max-width:480px){.stats{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:1/-1}}
+
+/* who */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:30px 28px;display:grid;gap:14px;align-content:start;min-width:0}
+.card h3{font-size:24px}
+.card p{color:var(--muted)}
+.card .tag{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.card .list{display:grid;gap:8px;color:var(--muted);font-size:15px}
+.card .list span{display:flex;gap:10px;align-items:baseline}
+.card .list span::before{content:"";flex:0 0 6px;width:6px;height:6px;border-radius:50%;background:var(--gold);transform:translateY(-3px)}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+
+/* steps */
+.steps{display:grid;gap:0;border-top:1px solid var(--line2)}
+.step{display:grid;grid-template-columns:150px 1fr;gap:20px 36px;padding:28px 0;border-bottom:1px solid var(--line)}
+.step .when{display:grid;gap:4px;align-content:start}
+.step .when b{font-family:var(--display);font-size:20px;font-weight:700;color:var(--gold);letter-spacing:-.01em}
+.step .when span{font-size:13px;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.step h3{margin-bottom:8px}
+.step p{color:var(--muted);max-width:66ch}
+@media (max-width:640px){.step{grid-template-columns:1fr;gap:8px}}
+
+/* definition strip */
+.def{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px}
+.def div{border:1px solid var(--line2);border-radius:16px;padding:22px 22px;background:var(--bg2);display:grid;gap:6px;min-width:0}
+.def b{font-family:var(--display);font-size:28px;font-weight:800;color:var(--fg);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.def span{font-size:14px;color:var(--muted);line-height:1.45}
+@media (max-width:760px){.def{grid-template-columns:1fr}}
+
+/* split */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.col{border-radius:20px;padding:30px 28px;display:grid;gap:18px;align-content:start;border:1px solid var(--line);background:var(--panel);min-width:0}
+.col.me{border-color:rgba(230,180,90,.35);background:linear-gradient(180deg,rgba(230,180,90,.08),var(--panel) 40%)}
+.col h3{font-size:14px;letter-spacing:.14em;text-transform:uppercase;font-family:var(--body);font-weight:700;color:var(--muted)}
+.col.me h3{color:var(--gold)}
+.col ul{margin:0;padding:0;display:grid;gap:12px}
+.col li{list-style:none;display:flex;gap:12px;align-items:flex-start;color:var(--fg);font-size:16px;line-height:1.5}
+.col li svg{flex:0 0 18px;width:18px;height:18px;margin-top:4px;color:var(--gold)}
+.col.you li svg{color:var(--dim)}
+.split-note{margin-top:22px;color:var(--muted);font-size:16px;max-width:66ch}
+.split-note b{color:var(--fg);font-weight:600}
+@media (max-width:760px){.split{grid-template-columns:1fr}}
+
+/* proof */
+.proof{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:stretch}
+.proof .big{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:34px 30px;display:grid;gap:16px;align-content:start}
+.proof .big p{color:var(--muted);max-width:52ch}
+.proof .big .n{font-family:var(--display);font-size:clamp(40px,5vw,64px);font-weight:800;line-height:1;letter-spacing:-.03em}
+.proof .big .n small{display:block;font-family:var(--body);font-size:14px;font-weight:600;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.xcard{background:var(--bg2);border:1px solid var(--line2);border-radius:20px;padding:30px 28px;display:grid;gap:14px;align-content:space-between;text-decoration:none;transition:border-color .15s}
+.xcard:hover{border-color:var(--gold)}
+.xcard .handle{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:-.02em;display:flex;align-items:center;gap:12px}
+.xcard .handle svg{width:22px;height:22px}
+.xcard p{color:var(--muted)}
+.xcard .go{color:var(--gold);font-weight:700;font-size:15px}
+@media (max-width:760px){.proof{grid-template-columns:1fr}}
+
+/* price */
+.price{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,64px);align-items:start}
+.pricebox{border:1px solid rgba(230,180,90,.4);background:linear-gradient(180deg,rgba(230,180,90,.1),var(--panel) 45%);border-radius:24px;padding:36px 32px;display:grid;gap:20px}
+.pricebox .amt{font-family:var(--display);font-size:clamp(56px,7vw,84px);font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.pricebox .amt small{font-family:var(--body);font-size:16px;font-weight:600;color:var(--muted);letter-spacing:0;margin-left:10px}
+.pricebox ul{margin:0;padding:0;display:grid;gap:10px}
+.pricebox li{list-style:none;display:flex;gap:12px;color:var(--fg);font-size:16px}
+.pricebox li svg{flex:0 0 18px;width:18px;height:18px;margin-top:4px;color:var(--gold)}
+.pricebox .btn{justify-self:start;margin-top:4px}
+.pricetext{display:grid;gap:18px;color:var(--muted);font-size:17px;max-width:54ch}
+.pricetext b{color:var(--fg);font-weight:600}
+.compare{display:grid;gap:10px;margin-top:6px}
+.compare div{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--line);font-size:15px}
+.compare div span:last-child{color:var(--fg);font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.compare div.you span:last-child{color:var(--gold)}
+@media (max-width:860px){.price{grid-template-columns:1fr}}
+
+/* faq */
+.faq{display:grid;gap:0;border-top:1px solid var(--line2);max-width:820px}
+details{border-bottom:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:22px 0;font-family:var(--display);font-size:20px;font-weight:600;letter-spacing:-.01em}
+summary::-webkit-details-marker{display:none}
+summary .plus{flex:0 0 28px;width:28px;height:28px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;color:var(--gold);font-size:18px;line-height:1;transition:transform .2s}
+details[open] summary .plus{transform:rotate(45deg)}
+details p{color:var(--muted);padding:0 0 22px;max-width:66ch;font-size:16px}
+
+/* final */
+.final{text-align:left}
+.final .wrap{display:grid;gap:22px;max-width:760px}
+.final h2{font-size:clamp(34px,5vw,60px)}
+footer{border-top:1px solid var(--line);padding-block:30px;font-size:14px;color:var(--dim)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 24px}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--fg)}
+footer .links{display:flex;gap:22px;flex-wrap:wrap}
+
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn,.xcard,summary .plus{transition:none}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><i></i>No Degree AE</a>
+    <div class="navlinks">
+      <a href="#story">My story</a>
+      <a href="#how">How it works</a>
+      <a href="#price">Price</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a class="btn" href="https://calendly.com/samross911" target="_blank" rel="noopener">Book a fit call</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="glow"></div>
+  <div class="wrap">
+    <span class="eyebrow">1:1 &middot; 90 days &middot; done with you</span>
+    <h1>Your first tech sales job in 90 days. <em>Whatever your resume says now.</em></h1>
+    <p class="lede">I'm a mid-market AE at 22 with no degree. I got my first SDR job at 19 in under a month with a referral, not an application. <b>I run that exact process with you until you sign an offer at a good tech company.</b></p>
+    <div class="cta-row">
+      <a class="btn" href="https://calendly.com/samross911" target="_blank" rel="noopener">Book a 15-min fit call <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="ghost" href="#how">See how it works</a>
+    </div>
+    <p class="fine">No pitch. I'll tell you straight if it makes sense for you.</p>
+    <div class="chips">
+      <span class="chip">No degree required</span>
+      <span class="chip">No sales experience required</span>
+      <span class="chip">Any US metro, remote included</span>
+    </div>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap">
+    <span class="eyebrow">The guarantee</span>
+    <p>An offer from a good tech company in 90 days, <span>or I keep working with you free until you get one.</span>
+      <small>One condition: you do the outreach. Go a week without sending messages and the clock pauses.</small>
+    </p>
+  </div>
+</div>
+
+<section id="story">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Why me</span>
+      <h2>I didn't read about this. I did it with less than $1k in the bank.</h2>
+    </div>
+    <div class="story">
+      <div class="text">
+        <p>At 19 I had no degree and nine months at a cell phone store. I moved, signed a 12-month lease, and the next day the transfer my GM promised fell through. I had under $1k and rent due.</p>
+        <p>I financed a $495 tech sales course over six months and spent 12 hours a day on outreach. Not applications. Messages to SDRs, hiring managers and recruiters until one of them put me in front of the person who could hire me. <b>SDR job at a cybersecurity company in under a month.</b></p>
+        <p class="now">Three years later I'm a mid-market AE, the youngest in my company's history, and I've hit quota in every role. Everything below is the process I used. I just run it with you now.</p>
+      </div>
+      <div>
+        <div class="stats">
+          <div class="stat"><b>19</b><span>when I landed my first SDR job</span></div>
+          <div class="stat"><b>&lt;30</b><span>days from zero to signed offer</span></div>
+          <div class="stat"><b>0</b><span>degrees, applications that worked, or connections</span></div>
+        </div>
+        <ul class="timeline">
+          <li><b>Cell phone store, 9 months</b>Learned to sell. No idea tech sales existed.</li>
+          <li><b>Moved. Lease signed. Transfer fell through.</b>Under $1k, 30 days to figure it out.</li>
+          <li class="hot"><b>Outreach, 12 hours a day</b>Referral in. First SDR job in under a month.</li>
+          <li class="hot"><b>Mid-market AE at 22</b>Youngest in company history. Quota every year.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="who">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Who this is for</span>
+      <h2>Two kinds of people land here. The process is the same for both.</h2>
+    </div>
+    <div class="two">
+      <div class="card">
+        <span class="tag">You've sold before</span>
+        <h3>Just not software.</h3>
+        <p>Door to door, retail, cars, real estate, insurance, call center. You already handle rejection and close. Hiring managers want that, they just don't see it because your resume is written for the wrong industry.</p>
+        <div class="list"><span>Resume rebuilt around your numbers</span><span>You're the fastest to place</span></div>
+      </div>
+      <div class="card">
+        <span class="tag">You've never sold anything</span>
+        <h3>No degree, no network, no sales job yet.</h3>
+        <p>Restaurants, warehouses, school, or nothing. You're the person I was. Companies hire first-timers every single week, they just hire the ones a rep on the team vouched for.</p>
+        <div class="list"><span>We build the story first</span><span>Then we get you the referral</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">How it works</span>
+      <h2>Ninety days, start to signed offer.</h2>
+      <p>You don't apply into a black hole. You get referred in by someone on the team, then you're prepped for every conversation after that.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="when"><b>Day 0</b><span>Fit call</span></div>
+        <div><h3>15 minutes, no pitch</h3><p>Where you are, what you've tried, and whether you can do 60 to 90 minutes of outreach a day. If it's a fit, we start that week.</p></div>
+      </div>
+      <div class="step">
+        <div class="when"><b>Week 1</b><span>Foundation</span></div>
+        <div><h3>Resume, LinkedIn, story</h3><p>I rewrite your resume around numbers from whatever you've done, rebuild your LinkedIn so it reads "future SDR," and we nail your answer to why sales, why now, and why you'll outwork the floor.</p></div>
+      </div>
+      <div class="step">
+        <div class="when"><b>Week 1-2</b><span>Target list</span></div>
+        <div><h3>15 to 20 companies in your metro</h3><p>I scout them myself. Each one is open, pays, scores 80+ on RepVue, and is realistic for your experience. You get the list with the reason each one is on it, the open role, and the people to message.</p></div>
+      </div>
+      <div class="step">
+        <div class="when"><b>Week 2-10</b><span>The hunt</span></div>
+        <div><h3>Referral, manager, recruiter</h3><p>You message SDRs at every target company and get on 15-minute calls. Then the SDR manager. Then the recruiter. I give you every message and we review your numbers and your actual outreach every week.</p></div>
+      </div>
+      <div class="step">
+        <div class="when"><b>As they come</b><span>Interviews</span></div>
+        <div><h3>Mock screen, mock cold call, final round</h3><p>Prep before every round using what your referral contact told you the manager cares about. You walk in knowing the questions.</p></div>
+      </div>
+      <div class="step">
+        <div class="when"><b>Day 90</b><span>Offer</span></div>
+        <div><h3>Base, OTE, ramp, promotion path</h3><p>We go through the offer together. You don't take a bad one out of panic, and you don't leave money on the table.</p></div>
+      </div>
+    </div>
+    <div class="def">
+      <div><b>80+</b><span>RepVue score. Reps rate their own company on pay, quota attainment and culture. I only put you in front of the good ones.</span></div>
+      <div><b>$70K+</b><span>on-target earnings for every role on your list. A first SDR seat pays $60-80K, top performers clear $100K.</span></div>
+      <div><b>AE path</b><span>Companies that promote SDRs from within. The first job is the door, not the destination.</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="split">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">What you do, what I do</span>
+      <h2>You do the outreach. I make sure every message, target and interview is right.</h2>
+    </div>
+    <div class="split">
+      <div class="col you">
+        <h3>You</h3>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>60 to 90 minutes of outreach a day, no excuses</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>First 20 messages out within 48 hours of getting your list</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Bring your numbers to the weekly call: sent, replies, referrals, interviews</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Show up to every interview prepped</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Tell me the second something changes</li>
+        </ul>
+      </div>
+      <div class="col me">
+        <h3>Me</h3>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Resume and LinkedIn rewrite in week one</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>15 to 20 target companies in your metro, scouted by hand, with the people to message</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Every message template for reps, managers and recruiters</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>30-minute weekly pipeline review where I fix your actual messages</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Mock phone screen and mock cold call before every interview</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Offer review and the "which one do I take" call</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Text and DM access between calls</li>
+        </ul>
+      </div>
+    </div>
+    <p class="split-note"><b>That split is the point.</b> The skill that gets you the job is the skill the job tests. Services that do the outreach for you hand you an interview and nothing else.</p>
+  </div>
+</section>
+
+<section id="proof">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Proof</span>
+      <h2>I post the work in public.</h2>
+    </div>
+    <div class="proof">
+      <div class="big">
+        <div class="n"><small>Right now</small>First clients started November 2026</div>
+        <p>The first spots went to people who agreed to let me share the whole thing: the target list, the messages, the replies, the offer. Every win gets posted here and on X with their name on it, the day it happens.</p>
+        <p>Until then, the proof is me. Mid-market AE at 22, no degree, quota every year, and 3,000 people watching me break it down daily.</p>
+      </div>
+      <a class="xcard" href="https://x.com/NoDegreeAE" target="_blank" rel="noopener">
+        <div>
+          <div class="handle"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@NoDegreeAE</div>
+          <p>Daily posts on how I got in, how the referral route actually works, and what the first 90 days look like.</p>
+        </div>
+        <span class="go">Follow along &rarr;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="price">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Price</span>
+      <h2>One payment. Ninety days. You walk away with the job and the skill.</h2>
+    </div>
+    <div class="price">
+      <div class="pricebox">
+        <div class="amt">$997<small>one time, or 2 payments</small></div>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Full 90-day program, 1:1</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Resume, LinkedIn, target list, every message</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Weekly review plus text access between calls</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Interview prep before every round, offer review at the end</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Offer in 90 days or I keep working free</li>
+        </ul>
+        <a class="btn" href="https://calendly.com/samross911" target="_blank" rel="noopener">Book the fit call <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <div class="pricetext">
+        <p><b>A first SDR job pays $60 to 80K on target.</b> Top performers clear $100K in year one and the AE seat after that is $150K+. The program pays for itself in your first commission check.</p>
+        <p>I take a handful of people at a time so every message gets looked at. If you're not a fit, I'll say so on the call.</p>
+        <div class="compare">
+          <div><span>Done-for-you job search services</span><span>$1,497 / month</span></div>
+          <div><span>Tech sales bootcamps</span><span>$2,000 to $5,000</span></div>
+          <div><span>Applying on your own</span><span>6+ months, no answer</span></div>
+          <div class="you"><span>No Degree AE, 90 days, 1:1</span><span>$997</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">FAQ</span>
+      <h2>Straight answers.</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>Do I need a degree?<span class="plus">+</span></summary>
+        <p>No. I don't have one. Most SDR postings say "bachelor's preferred" and most SDR floors are full of people who don't have one. A referral from someone on the team makes that line disappear.</p>
+      </details>
+      <details>
+        <summary>I've never sold anything. Does this still work?<span class="plus">+</span></summary>
+        <p>Yes, it just takes a couple more weeks. We build your story first, then your target list leans toward companies that hire in classes and train from zero. You'll be the one who shows up having already talked to three people on the team.</p>
+      </details>
+      <details>
+        <summary>What if I don't have an offer in 90 days?<span class="plus">+</span></summary>
+        <p>I keep working with you for free until you do. The one condition is that you're doing the outreach. If you go a week without sending messages, the clock pauses and so does the guarantee. I can't want it more than you do.</p>
+      </details>
+      <details>
+        <summary>How much time does this take?<span class="plus">+</span></summary>
+        <p>60 to 90 minutes a day of outreach, a 30-minute call with me every week, and the interviews themselves. It works around a full-time job. It does not work around skipping days.</p>
+      </details>
+      <details>
+        <summary>Where do you place people?<span class="plus">+</span></summary>
+        <p>Any US metro. I build the list around where you are and how far you'll commute, and I include remote roles where they're real. Your list is 15 to 20 companies with an open role right now, not a generic list of logos.</p>
+      </details>
+      <details>
+        <summary>Why not just apply online?<span class="plus">+</span></summary>
+        <p>Because 300 other people did. An SDR posting at a good company gets hundreds of applications in a week and the recruiter reads the referred ones first. Applying is what you do after someone on the team already said your name.</p>
+      </details>
+      <details>
+        <summary>What's the fit call?<span class="plus">+</span></summary>
+        <p>15 minutes. I ask where you are, what you've tried, and what you want. If I can get you hired I'll tell you how. If I can't, I'll tell you that too and point you somewhere better.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <span class="eyebrow">Next step</span>
+    <h2>Fifteen minutes. Then you'll know.</h2>
+    <p class="muted" style="font-size:18px;max-width:52ch">Book the fit call. If it makes sense, we start this week and your first 20 messages go out before next weekend.</p>
+    <div class="cta-row">
+      <a class="btn" href="https://calendly.com/samross911" target="_blank" rel="noopener">Book a 15-min fit call <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="ghost" href="https://x.com/NoDegreeAE" target="_blank" rel="noopener">Or DM "SDR" on X</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; 2026 No Degree AE</span>
+    <div class="links">
+      <a href="https://x.com/NoDegreeAE" target="_blank" rel="noopener">X</a>
+      <a href="https://calendly.com/samross911" target="_blank" rel="noopener">Book a call</a>
+      <span>nodegreeeae@gmail.com</span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
