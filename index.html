@@ -71,15 +71,6 @@ section{padding-block:clamp(48px,7vw,88px);border-top:1px solid var(--line)}
 .bar p span{color:var(--gold)}
 .bar small{font-size:13px;color:var(--muted)}
 
-/* scoreboard */
-.board{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line2);border:1px solid var(--line2);border-radius:18px;overflow:hidden}
-.board div{background:var(--panel);padding:20px 16px;display:grid;gap:4px;min-width:0}
-.board b{font-family:var(--display);font-size:clamp(30px,4vw,44px);font-weight:800;line-height:1;color:var(--gold);font-variant-numeric:tabular-nums}
-.board span{font-size:12px;color:var(--muted);line-height:1.35}
-.board-note{margin-top:14px;font-size:14px;color:var(--muted);max-width:60ch}
-.board-note b{color:var(--fg);font-weight:600}
-@media (max-width:640px){.board{grid-template-columns:1fr 1fr}}
-
 /* story */
 .story{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,64px);align-items:start}
 .story .text{display:grid;gap:14px;font-size:17px;color:var(--muted);max-width:56ch}
@@ -125,17 +116,6 @@ section{padding-block:clamp(48px,7vw,88px);border-top:1px solid var(--line)}
 .split-note{margin-top:16px;color:var(--muted);font-size:15px;max-width:62ch}
 .split-note b{color:var(--fg);font-weight:600}
 @media (max-width:640px){.split{grid-template-columns:1fr}}
-
-/* receipts */
-.receipts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:start}
-.receipts .tw{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:6px;overflow:hidden}
-.receipts .tw blockquote{margin:0;padding:16px;color:var(--muted);font-size:14px}
-.receipts .tw blockquote a{color:var(--gold)}
-.receipts .twitter-tweet{margin:0 auto!important}
-.xrow{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin-top:18px;font-size:14px;color:var(--muted)}
-.xrow a{color:var(--fg);font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
-.xrow a svg{width:16px;height:16px}
-@media (max-width:860px){.receipts{grid-template-columns:1fr}}
 
 /* price */
 .price{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,4vw,48px);align-items:start}
@@ -187,7 +167,6 @@ footer .links{display:flex;gap:18px;flex-wrap:wrap}
     <div class="navlinks">
       <a href="#story">My story</a>
       <a href="#how">How it works</a>
-      <a href="#receipts">Receipts</a>
       <a href="#price">Price</a>
       <a href="#faq">FAQ</a>
     </div>
@@ -217,22 +196,6 @@ footer .links{display:flex;gap:18px;flex-wrap:wrap}
     <small>One condition: you do the outreach. Go a week without sending messages and the clock pauses.</small>
   </div>
 </div>
-
-<section id="scoreboard">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow">Scoreboard &middot; updated weekly</span>
-      <h2>I'm new at this. So the numbers are public.</h2>
-    </div>
-    <div class="board" id="board">
-      <div><b data-k="started">Nov '26</b><span>program started</span></div>
-      <div><b data-k="clients">3</b><span>people in the program right now</span></div>
-      <div><b data-k="calls">0</b><span>rep calls booked by clients</span></div>
-      <div><b data-k="offers">0</b><span>offers signed</span></div>
-    </div>
-    <p class="board-note"><b>Week 1.</b> First three took free spots in exchange for letting me post the whole thing: target list, messages, replies, offer. Every number up there changes on Fridays. When the last one isn't zero, it'll have a name and a day count next to it.</p>
-  </div>
-</section>
 
 <section id="story">
   <div class="wrap">
@@ -332,25 +295,6 @@ footer .links{display:flex;gap:18px;flex-wrap:wrap}
   </div>
 </section>
 
-<section id="receipts">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow">Receipts</span>
-      <h2>No testimonials yet. Here's what I've got instead.</h2>
-      <p>I post how this works every day on X. These are real posts with real numbers, not quotes I wrote for myself.</p>
-    </div>
-    <div class="receipts">
-      <div class="tw"><blockquote class="twitter-tweet" data-theme="dark" data-dnt="true"><a href="https://twitter.com/NoDegreeAE/status/2114911949041590331">I was the #2 SDR in America for my company last year. Here's how.</a></blockquote></div>
-      <div class="tw"><blockquote class="twitter-tweet" data-theme="dark" data-dnt="true"><a href="https://twitter.com/NoDegreeAE/status/2115089219626676628">How to land a corporate SDR interview without just applying.</a></blockquote></div>
-      <div class="tw"><blockquote class="twitter-tweet" data-theme="dark" data-dnt="true"><a href="https://twitter.com/NoDegreeAE/status/2115445432214229362">The message that got me into tech sales wasn't to a hiring manager.</a></blockquote></div>
-    </div>
-    <div class="xrow">
-      <a href="https://x.com/NoDegreeAE" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@NoDegreeAE</a>
-      <span>3,000+ following along &middot; new post every day</span>
-    </div>
-  </div>
-</section>
-
 <section id="price">
   <div class="wrap">
     <div class="sec-head">
@@ -433,6 +377,5 @@ footer .links{display:flex;gap:18px;flex-wrap:wrap}
   new IntersectionObserver(function(e){s.classList.toggle('show',!e[0].isIntersecting&&e[0].boundingClientRect.top<0);},{threshold:0}).observe(h);
 })();
 </script>
-<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </body>
 </html>
