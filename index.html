@@ -83,6 +83,12 @@ section{padding-block:clamp(48px,7vw,88px);border-top:1px solid var(--line)}
 .timeline li b{color:var(--fg);font-weight:600;display:block}
 @media (max-width:760px){.story{grid-template-columns:1fr}}
 
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line2);border:1px solid var(--line2);border-radius:16px;overflow:hidden;margin-bottom:22px}
+.stats div{background:var(--panel);padding:18px 14px;display:grid;gap:4px;min-width:0}
+.stats b{font-family:var(--display);font-size:clamp(24px,3vw,34px);font-weight:800;line-height:1;color:var(--gold);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stats span{font-size:12px;color:var(--muted);line-height:1.35}
+@media (max-width:480px){.stats{grid-template-columns:1fr 1fr}.stats div:last-child{grid-column:1/-1}}
+
 /* who */
 .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;display:grid;gap:8px;align-content:start;min-width:0}
@@ -179,7 +185,7 @@ footer .links{display:flex;gap:18px;flex-wrap:wrap}
   <div class="wrap">
     <span class="eyebrow">1:1 &middot; 90 days &middot; done with you</span>
     <h1>Your first tech sales job in 90 days. <em>Whatever your resume says now.</em></h1>
-    <p class="lede">Mid-market AE at 22, no degree. I got my first SDR job at 19 in under a month with a referral, not an application. <b>I run that exact process with you until you sign.</b></p>
+    <p class="lede">Mid-market AE at 22, no degree. First SDR job at 19 in under a month with a referral, not an application. #1 of 50+ SDRs at my first company, #2 in America at my second. <b>I run that exact process with you until you sign.</b></p>
     <div class="cta-row">
       <a class="btn" id="cta-hero" href="https://calendly.com/samross911" target="_blank" rel="noopener">Book a 15-min fit call <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       <a class="ghost" href="#how">See how it works</a>
@@ -206,15 +212,24 @@ footer .links{display:flex;gap:18px;flex-wrap:wrap}
     <div class="story">
       <div class="text">
         <p>19, no degree, nine months at a cell phone store. Moved, signed a 12-month lease, and the next day the transfer my GM promised fell through. Rent due, under $1k.</p>
-        <p>Financed a $495 tech sales course and spent 12 hours a day messaging SDRs, managers and recruiters until someone put me in front of the person who could hire me. <b>SDR job at a cybersecurity company in under a month.</b> Three years later: mid-market AE, youngest in company history, quota every year.</p>
+        <p>Financed a $495 tech sales course and spent 12 hours a day messaging SDRs, managers and recruiters until someone put me in front of the person who could hire me. <b>SDR job in under a month.</b> Then I was the #1 SDR on a floor of 50+ for 7 of my 9 months there. Then #2 SDR in America at the cybersecurity company I'm at now. Mid-market AE at 22, youngest in company history, quota every year.</p>
         <p><b>Everything on this page is the process I used. I just run it with you now.</b></p>
       </div>
-      <ul class="timeline">
-        <li><b>Cell phone store, 9 months</b>Learned to sell. Didn't know tech sales existed.</li>
-        <li><b>Moved. Lease signed. Transfer fell through.</b>Under $1k, 30 days to figure it out.</li>
-        <li class="hot"><b>Outreach, 12 hours a day</b>Referral in. First SDR job in under a month.</li>
-        <li class="hot"><b>Mid-market AE at 22</b>Youngest in company history. Quota every year.</li>
-      </ul>
+      <div>
+        <div class="stats">
+          <div><b>#1 of 50+</b><span>top SDR at my first company, 7 of my 9 months there</span></div>
+          <div><b>#2</b><span>SDR in America at my current company, last year</span></div>
+          <div><b>22</b><span>mid-market AE, youngest in company history</span></div>
+        </div>
+        <ul class="timeline">
+          <li><b>Cell phone store, 9 months</b>Learned to sell. Didn't know tech sales existed.</li>
+          <li><b>Moved. Lease signed. Transfer fell through.</b>Under $1k, 30 days to figure it out.</li>
+          <li class="hot"><b>Outreach, 12 hours a day</b>Referral in. First SDR job in under a month.</li>
+          <li class="hot"><b>#1 of 50+ SDRs</b>Top rep on the floor for 7 of 9 months.</li>
+          <li class="hot"><b>#2 SDR in America</b>At a cybersecurity company, last year.</li>
+          <li class="hot"><b>Mid-market AE at 22</b>Youngest in company history. Quota every year.</li>
+        </ul>
+      </div>
     </div>
   </div>
 </section>
@@ -336,6 +351,7 @@ footer .links{display:flex;gap:18px;flex-wrap:wrap}
     <div class="faq">
       <details><summary>Do I need a degree?<span class="plus">+</span></summary><p>No. I don't have one. Most SDR postings say "bachelor's preferred" and most SDR floors are full of people without one. A referral from someone on the team makes that line disappear.</p></details>
       <details><summary>I've never sold anything. Does this still work?<span class="plus">+</span></summary><p>Yes, it takes a couple more weeks. We build your story first and your list leans toward companies that hire in classes and train from zero. You show up having already talked to three people on the team.</p></details>
+      <details><summary>Will you do the outreach for me?<span class="plus">+</span></summary><p>No, and that's the point. Services that message hiring managers from your account hand you an interview and nothing else. You walk onto an SDR floor and have to do the thing you never learned, with a quota. I write every message and fix them every week, but you send them. By day 90 you have the job and the skill that keeps it.</p></details>
       <details><summary>What if I don't have an offer in 90 days?<span class="plus">+</span></summary><p>I keep working with you free until you do. One condition: you're doing the outreach. A week without messages pauses the clock and the guarantee. I can't want it more than you do.</p></details>
       <details><summary>How much time does it take?<span class="plus">+</span></summary><p>60-90 minutes of outreach a day, a 30-minute call with me every week, and the interviews. Works around a full-time job. Doesn't work around skipping days.</p></details>
       <details><summary>Why not just apply online?<span class="plus">+</span></summary><p>Because 300 other people did. A good SDR posting gets hundreds of applications in a week and the recruiter reads the referred ones first. Applying is what you do after someone on the team already said your name.</p></details>
