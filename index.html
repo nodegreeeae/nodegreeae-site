@@ -6,6 +6,12 @@
 <meta name="description" content="Your first tech sales job in 90 days. No degree, no experience required. 1:1 with a mid-market AE who did it at 19.">
 <meta name="theme-color" content="#0B0E14">
 <title>No Degree AE</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7WECSMBL4V"></script>
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('js',new Date());gtag('config','G-7WECSMBL4V');
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&display=swap">
 <style>
@@ -432,6 +438,7 @@ footer .links{display:flex;gap:18px;flex-wrap:wrap}
 
 <script>
 (function(){
+  document.querySelectorAll('a[href*="calendly.com"]').forEach(function(a){a.addEventListener('click',function(){var sec=a.closest('section,#sticky,nav,footer');var where=sec?(sec.id||sec.className.split(' ')[0]||sec.tagName.toLowerCase()):'page';if(window.gtag)gtag('event','book_call',{location:where,label:a.textContent.trim()});});});
   var s=document.getElementById('sticky'),h=document.getElementById('cta-hero');
   if(!s||!h||!('IntersectionObserver' in window)){if(s)s.classList.add('show');return;}
   new IntersectionObserver(function(e){s.classList.toggle('show',!e[0].isIntersecting&&e[0].boundingClientRect.top<0);},{threshold:0}).observe(h);
