@@ -127,30 +127,6 @@ section{padding-block:clamp(48px,7vw,88px);border-top:1px solid var(--line)}
 .split-note b{color:var(--fg);font-weight:600}
 @media (max-width:640px){.split{grid-template-columns:1fr}}
 
-/* compare */
-.cmp-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line2);border-radius:18px;background:var(--panel)}
-.cmp{border-collapse:collapse;width:100%;min-width:760px;font-size:14px}
-.cmp th,.cmp td{padding:14px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);color:var(--muted);line-height:1.4}
-.cmp thead th{font-family:var(--display);font-size:14px;font-weight:700;color:var(--fg);letter-spacing:-.01em;border-bottom:1px solid var(--line2);background:var(--bg2)}
-.cmp tbody th{color:var(--fg);font-weight:600;width:160px}
-.cmp tbody tr:last-child td,.cmp tbody tr:last-child th{border-bottom:0}
-.cmp .us{background:rgba(230,180,90,.08);color:var(--fg);font-weight:600}
-.cmp thead th.us{color:var(--gold);border-left:1px solid rgba(230,180,90,.35)}
-.cmp td.us{border-left:1px solid rgba(230,180,90,.35)}
-.cmp-note{margin-top:14px;font-size:14px;color:var(--muted);max-width:62ch}
-@media (max-width:760px){
-.cmp-scroll{overflow:visible;border:0;background:none;border-radius:0}
-.cmp{min-width:0;display:block}
-.cmp thead{display:none}
-.cmp tbody,.cmp tr,.cmp th,.cmp td{display:block;width:auto}
-.cmp tr{background:var(--panel);border:1px solid var(--line2);border-radius:16px;margin-bottom:12px;overflow:hidden}
-.cmp tbody th{padding:12px 16px 6px;border:0;font-family:var(--display);font-size:15px;color:var(--fg);width:auto}
-.cmp td{padding:7px 16px;border:0;font-size:13px;color:var(--muted)}
-.cmp td::before{content:attr(data-c);display:block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:700;margin-bottom:1px}
-.cmp td.us{border-left:0;border-top:1px solid rgba(230,180,90,.3);background:rgba(230,180,90,.08);padding:10px 16px 14px;margin-top:4px;font-size:14px}
-.cmp td.us::before{color:var(--gold)}
-}
-
 /* price */
 .price{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,4vw,48px);align-items:start}
 .pricebox{border:1px solid rgba(230,180,90,.4);background:linear-gradient(180deg,rgba(230,180,90,.1),var(--panel) 45%);border-radius:22px;padding:28px 24px;display:grid;gap:16px}
@@ -202,7 +178,6 @@ footer .legal{flex-basis:100%;font-size:12px;color:var(--dim);line-height:1.5;ma
     <div class="navlinks">
       <a href="#story">My story</a>
       <a href="#how">How it works</a>
-      <a href="#compare">Compare</a>
       <a href="#price">Price</a>
       <a href="#faq">FAQ</a>
     </div>
@@ -338,30 +313,6 @@ footer .legal{flex-basis:100%;font-size:12px;color:var(--dim);line-height:1.5;ma
   </div>
 </section>
 
-<section id="compare">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow">How this compares</span>
-      <h2>Four ways to get a tech sales job.</h2>
-    </div>
-    <div class="cmp-scroll">
-      <table class="cmp">
-        <thead>
-          <tr><th></th><th>Done-for-you services</th><th>Courses &amp; communities</th><th>Applying alone</th><th class="us">No Degree AE</th></tr>
-        </thead>
-        <tbody>
-          <tr><th>Who does the outreach</th><td data-c="Done-for-you services">Them, from your account</td><td data-c="Courses &amp; communities">Nobody. You watch videos.</td><td data-c="Applying alone">You, with no plan</td><td data-c="No Degree AE" class="us">You, with my messages and my targets</td></tr>
-          <tr><th>What you walk away with</th><td data-c="Done-for-you services">An interview</td><td data-c="Courses &amp; communities">A login</td><td data-c="Applying alone">Burnout</td><td data-c="No Degree AE" class="us">A job and the skill that keeps it</td></tr>
-          <tr><th>Built for</th><td data-c="Done-for-you services">People already in sales</td><td data-c="Courses &amp; communities">Anyone with a card</td><td data-c="Applying alone">Everyone</td><td data-c="No Degree AE" class="us">No degree, no experience, first job</td></tr>
-          <tr><th>Price</th><td data-c="Done-for-you services">$1,497 a month, open-ended</td><td data-c="Courses &amp; communities">$9 to $5,000</td><td data-c="Applying alone">Free</td><td data-c="No Degree AE" class="us">$997, once</td></tr>
-          <tr><th>Guarantee</th><td data-c="Done-for-you services">3 interviews in 30 days</td><td data-c="Courses &amp; communities">None</td><td data-c="Applying alone">None</td><td data-c="No Degree AE" class="us">An offer in 90 days, or free until you get one</td></tr>
-          <tr><th>Proof it works</th><td data-c="Done-for-you services">Their testimonials</td><td data-c="Courses &amp; communities">Their testimonials</td><td data-c="Applying alone">Your empty inbox</td><td data-c="No Degree AE" class="us">I did it myself at 19, then ran the floor</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="cmp-note">Courses are cheaper. If you can take a $49 course and get hired on your own, do that. This is for people who tried that and are still applying.</p>
-  </div>
-</section>
 
 <section id="price">
   <div class="wrap">
