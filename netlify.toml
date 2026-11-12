@@ -1,0 +1,4 @@
+# Commits that only change jobs.json skip the Netlify build (no publish, no credits).
+# The jobs page loads jobs.json straight from GitHub.
+[build]
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':(exclude)jobs.json'"

@@ -1,0 +1,95 @@
+{
+  "week": "Week of Nov 10, 2026",
+  "jobs": [
+    {
+      "company": "AppFolio",
+      "score": "87.4",
+      "role": "BDR, SMB",
+      "city": "San Diego",
+      "pay": "$76.5K OTE",
+      "note": "",
+      "url": "https://www.linkedin.com/jobs/view/4480179240"
+    },
+    {
+      "company": "Frontify",
+      "score": "86.2",
+      "role": "SDR",
+      "city": "New York",
+      "pay": "$87.5K",
+      "note": "",
+      "url": "https://www.linkedin.com/jobs/view/4477710319"
+    },
+    {
+      "company": "Workday",
+      "score": "86.2",
+      "role": "SDR",
+      "city": "Salt Lake City",
+      "pay": "$44-66K base + commission",
+      "note": "",
+      "url": "https://www.linkedin.com/jobs/view/4477323099"
+    },
+    {
+      "company": "Astronomer",
+      "score": "85.4",
+      "role": "SDR",
+      "city": "New York, hybrid",
+      "pay": "$100-115K",
+      "note": "1 yr outbound",
+      "url": "https://www.linkedin.com/jobs/view/4472753989"
+    },
+    {
+      "company": "CData",
+      "score": "85.0",
+      "role": "SDR",
+      "city": "Chapel Hill",
+      "pay": "$50-60K base + commission",
+      "note": "1 yr sales",
+      "url": "https://www.linkedin.com/jobs/view/4463389610"
+    },
+    {
+      "company": "MongoDB",
+      "score": "83.7",
+      "role": "Enterprise SDR",
+      "city": "Boston",
+      "pay": "$50K base + commission",
+      "note": "",
+      "url": "https://www.linkedin.com/jobs/view/4470477947"
+    },
+    {
+      "company": "Atlassian",
+      "score": "82.8",
+      "role": "SDR",
+      "city": "Salt Lake City",
+      "pay": "$53-69K base + commission",
+      "note": "",
+      "url": "https://www.linkedin.com/jobs/view/4446387888"
+    },
+    {
+      "company": "Elastic",
+      "score": "82.0",
+      "role": "SDR",
+      "city": "Austin",
+      "pay": "$66-104K OTE",
+      "note": "1 yr SaaS",
+      "url": "https://www.linkedin.com/jobs/view/4473029444"
+    },
+    {
+      "company": "BlackLine",
+      "score": "81.0",
+      "role": "BDR",
+      "city": "Los Angeles",
+      "pay": "$53-67K base + commission",
+      "note": "1 yr sales",
+      "url": "https://www.linkedin.com/jobs/view/4477328645"
+    },
+    {
+      "company": "LinkedIn",
+      "score": "81.0",
+      "role": "SDR 1",
+      "city": "Chicago",
+      "pay": "$66-94K",
+      "note": "1 yr sales",
+      "url": "https://www.linkedin.com/jobs/view/4480159373"
+    }
+  ]
+}
