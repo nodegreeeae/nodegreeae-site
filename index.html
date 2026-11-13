@@ -187,11 +187,21 @@ footer a{color:var(--muted);text-decoration:none}
 footer .legal{margin-top:24px;line-height:1.6;max-width:900px}
 footer .legal b{color:var(--muted);letter-spacing:.08em;font-size:11.5px}
 
- .jobs-band{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;text-decoration:none;background:var(--card);border:1px solid var(--line2);border-radius:22px;padding:26px 28px;transition:border-color .15s}
-.jobs-band:hover{border-color:var(--gold-line)}
-.jobs-band b{display:block;font-size:22px;letter-spacing:-.02em;margin-top:12px;line-height:1.25}
-.jobs-band em{display:block;font-style:normal;color:var(--muted);font-size:15px;margin-top:4px}
-.jobs-band .go{background:#fff;color:#0A0A0B;font-weight:700;font-size:15px;padding:12px 20px;border-radius:999px;white-space:nowrap}
+ .jobs-band{display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:center;background:linear-gradient(180deg,var(--gold-bg),rgba(245,179,66,.02));border:1px solid var(--gold-line);border-radius:24px;padding:30px 30px}
+.jobs-band b{display:block;font-size:24px;letter-spacing:-.02em;margin-top:14px;line-height:1.25}
+.jobs-band em{display:block;font-style:normal;color:var(--muted);font-size:15px;margin-top:8px}
+.jobs-band em a{color:var(--gold2);white-space:nowrap}
+.jb-form .row{display:flex;gap:10px;flex-wrap:wrap}
+.jb-form input[type=email]{flex:1 1 200px;min-width:0;background:#0B0B0E;border:1px solid var(--line2);border-radius:999px;color:var(--fg);font:inherit;font-size:16px;padding:14px 18px}
+.jb-form input[type=email]::placeholder{color:var(--dim)}
+.jb-form input[type=email]:focus{outline:none;border-color:var(--gold)}
+.jb-form button{background:#fff;color:#0A0A0B;border:0;border-radius:999px;font:inherit;font-weight:700;font-size:15px;padding:14px 22px;cursor:pointer;white-space:nowrap}
+.jb-form button:disabled{opacity:.6;cursor:default}
+.jb-form .msg{font-size:14px;color:var(--muted);margin-top:10px}
+.jb-form .msg:empty{display:none}
+.jb-form .msg.ok{color:#6FCF97;font-weight:600}
+.hp,.sr{position:absolute;left:-9999px}
+@media (max-width:820px){.jobs-band{grid-template-columns:1fr;padding:24px 20px}.jb-form button{flex:1 1 100%}}
 .sticky{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,rgba(9,9,11,.95) 30%);display:none}
 .sticky .btn{width:100%;justify-content:center;font-size:16px;padding:15px 20px}
 @media (max-width:760px){.sticky.show{display:block}}
@@ -493,10 +503,23 @@ footer .legal b{color:var(--muted);letter-spacing:.08em;font-size:11.5px}
 
 <section id="jobs-band" style="padding:0 0 96px">
   <div class="wrap">
-    <a class="jobs-band" href="/jobs">
-      <span><span class="pill caps">Free · updated every Monday</span><b>The 10 best SDR/BDR openings this week</b><em>80+ on RepVue, posted in the last 7 days.</em></span>
-      <span class="go">See the list &rarr;</span>
-    </a>
+    <div class="jobs-band">
+      <div class="jb-text">
+        <span class="pill caps">Not ready for a call?</span>
+        <b>Get the 10 best SDR/BDR openings every Monday</b>
+        <em>80+ on RepVue, posted that week, apply links for every role. Free. <a href="/jobs">See this week's list &rarr;</a></em>
+      </div>
+      <form class="jb-form" id="signup" name="jobs-list" method="POST" action="/jobs?joined=1" data-netlify="true" netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="jobs-list">
+        <p class="hp"><label>Leave this empty <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+        <label class="sr" for="su-email">Email</label>
+        <div class="row">
+          <input id="su-email" type="email" name="email" placeholder="you@email.com" autocomplete="email" required>
+          <button type="submit">Send me the list</button>
+        </div>
+        <p class="msg" id="su-msg" aria-live="polite"></p>
+      </form>
+    </div>
   </div>
 </section>
 
@@ -531,6 +554,18 @@ footer .legal b{color:var(--muted);letter-spacing:.08em;font-size:11.5px}
   var s=document.getElementById('sticky'),h=document.getElementById('cta-hero');
   if(!s||!h||!('IntersectionObserver' in window)){if(s)s.classList.add('show');return;}
   new IntersectionObserver(function(e){s.classList.toggle('show',!e[0].isIntersecting&&e[0].boundingClientRect.top<0);},{threshold:0}).observe(h);
+})();
+
+(function(){
+  var f=document.getElementById('signup'),m=document.getElementById('su-msg');if(!f)return;
+  function done(){f.querySelector('.row').style.display='none';m.className='msg ok';m.textContent="You're in. Next Monday's list goes straight to your inbox.";}
+  f.addEventListener('submit',function(e){
+    if(!window.fetch)return;e.preventDefault();
+    var b=f.querySelector('button');b.disabled=true;m.className='msg';m.textContent='';
+    fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(new FormData(f)).toString()})
+      .then(function(r){if(!r.ok)throw 0;done();if(window.gtag)gtag('event','jobs_signup',{location:'home'});})
+      .catch(function(){b.disabled=false;m.textContent="That didn't go through. Try again, or DM \"SDR\" on X.";});
+  });
 })();
 </script>
 </body>
