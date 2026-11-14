@@ -26,22 +26,40 @@
 
   /* ---------- sign in ---------- */
   var LOGIN = { step: 'email', email: '', msg: '', busy: false, sentAt: 0 }, AFTER = null;
-  function shell(hide) { ['tabs', 'prog', 'refresh', 'tbar'].forEach(function (id) { var e = document.getElementById(id); if (e) e.hidden = hide; }); var a = document.getElementById('acct'); if (a && hide) a.hidden = true; }
+  function shell(hide) {
+    document.body.classList.toggle('signed-out', !!hide);
+    ['tabs', 'prog', 'refresh', 'tbar'].forEach(function (id) { var e = document.getElementById(id); if (e) e.hidden = hide; });
+    var a = document.getElementById('acct'); if (a && hide) a.hidden = true;
+    var bar = document.querySelector('.bar1'), home = document.getElementById('homelink');
+    if (hide && bar && !home) { home = document.createElement('a'); home.id = 'homelink'; home.className = 'navlink'; home.href = '/'; home.textContent = 'nodegreeae.com'; bar.appendChild(home); }
+    if (home) home.hidden = !hide;
+  }
+  var ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   function loginView() {
     shell(true);
-    var h = '<div class="center login">';
+    var h = '<div class="auth">' +
+      '<div class="auth-copy"><span class="pill">Client portal</span>' +
+      '<h1>Everything\'s written. <span>You press send.</span></h1>' +
+      '<p class="sub">Your companies, who to message at each one, and what to say. Tap each step as you do it.</p></div>' +
+      '<ul class="auth-list">' +
+      '<li><span><b>Today\'s steps, in order</b>Open it and you know what to do next.</span></li>' +
+      '<li><span><b>Every message written for the exact person</b>Copy it, send it, tap done.</span></li>' +
+      '<li><span><b>Saves as you go</b>Pick up on your phone where you left off on your laptop.</span></li>' +
+      '</ul>' +
+      '<div class="auth-card login">';
     if (LOGIN.step === 'email') {
-      h += '<h2>Sign in</h2><p>Enter the email you gave Sam. You\'ll get a sign-in code.</p>' +
-        '<form id="lg"><input class="txt" id="lg-email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="you@email.com" value="' + esc(LOGIN.email) + '" required>' +
-        '<div class="acts"><button class="b primary" type="submit"' + (LOGIN.busy ? ' disabled' : '') + '>' + (LOGIN.busy ? 'Sending…' : 'Email me a code') + '</button></div></form>';
+      h += '<h2>Sign in</h2><p class="lead">Enter the email you gave Sam. We\'ll email you a 6-digit code. No password.</p>' +
+        '<form id="lg"><label for="lg-email">Email</label><input class="txt" id="lg-email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="you@email.com" value="' + esc(LOGIN.email) + '" required>' +
+        '<button class="go" type="submit"' + (LOGIN.busy ? ' disabled' : '') + '>' + (LOGIN.busy ? 'Sending…' : 'Email me a code ' + ARROW) + '</button></form>';
     } else {
-      h += '<h2>Check your email</h2><p>We sent a code to <b>' + esc(LOGIN.email) + '</b>. It can take a minute. Check spam if you don\'t see it.</p>' +
-        '<form id="lg"><input class="txt code" id="lg-code" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" maxlength="8" placeholder="Code" required>' +
-        '<div class="acts"><button class="b primary" type="submit"' + (LOGIN.busy ? ' disabled' : '') + '>' + (LOGIN.busy ? 'Checking…' : 'Sign in') + '</button></div></form>' +
-        '<div class="acts"><button class="undo" id="lg-again">Send a new code</button><button class="undo" id="lg-back">Use a different email</button></div>';
+      h += '<h2>Check your email</h2><p class="lead">We sent a code to <b>' + esc(LOGIN.email) + '</b>. It can take a minute. Check spam if you don\'t see it.</p>' +
+        '<form id="lg"><label for="lg-code">6-digit code</label><input class="txt code" id="lg-code" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" maxlength="8" placeholder="000000" required>' +
+        '<button class="go" type="submit"' + (LOGIN.busy ? ' disabled' : '') + '>' + (LOGIN.busy ? 'Checking…' : 'Sign in ' + ARROW) + '</button></form>' +
+        '<div class="alt"><button class="undo" id="lg-again">Send a new code</button><button class="undo" id="lg-back">Use a different email</button></div>';
     }
     if (LOGIN.msg) h += '<p class="lg-msg" role="alert">' + esc(LOGIN.msg) + '</p>';
-    view.innerHTML = h + '</div>';
+    h += '<p class="fine">For No Degree AE clients. Not one yet? <a href="/">See how it works</a></p></div></div>';
+    view.innerHTML = h;
     var f = document.getElementById('lg'), inp = document.getElementById(LOGIN.step === 'email' ? 'lg-email' : 'lg-code');
     f.addEventListener('submit', function (e) { e.preventDefault(); if (LOGIN.busy) return; if (LOGIN.step === 'email') send(inp.value); else verify(inp.value); });
     var again = document.getElementById('lg-again'), back = document.getElementById('lg-back');
