@@ -34,8 +34,8 @@
 <div class="wrap acct" id="acct" hidden></div>
 
 <script src="/portal/supabase.js?v=2.119.0"></script>
-<script src="/portal/lib.js?v=2"></script>
-<script src="/portal/sb.js?v=3"></script>
+<script src="/portal/lib.js?v=4"></script>
+<script src="/portal/sb.js?v=4"></script>
 <script>
 (function () {
   'use strict';
@@ -293,6 +293,7 @@
     var t = PQ.tomorrow(Q, S), parts = [];
     if (t.calls) parts.push('call ' + PQ.plural(t.calls, 'manager'));
     if (t.names.length) parts.push(t.names.length === 1 ? t.names[0] : t.names.slice(0, -1).join(', ') + ' and ' + t.names[t.names.length - 1]);
+    if (t.more) parts.push('connect with ' + t.more + ' more ' + (t.more === 1 ? 'person' : 'people'));
     if (t.bumps) parts.push('bump ' + PQ.plural(t.bumps, 'manager'));
     if (t.applies) parts.push('apply at ' + PQ.plural(t.applies, 'company').replace('companys', 'companies'));
     return t.empty ? 'Voice memos and replies only. Anything a rep or manager sends you, tap it here.' : parts.join(', then ').replace(/^./, function (c) { return c.toUpperCase(); }) + '.';
@@ -317,7 +318,9 @@
     if (t.leftovers.length) h += sec('Left over', 'From earlier days. Clear these before the new ones.', t.leftovers.map(function (e) { return card(e, true); }).join(''));
     if (t.applies.length) h += sec('Apply', 'A week in. Got a referral? Use their link. No referral? Apply directly today.', t.applies.map(function (e) { return card(e, true); }).join(''));
     if (t.bumps.length) h += sec('Bump the managers', 'It\'s been a few days. One short update each.', t.bumps.map(function (e) { return card(e, true); }).join(''));
-    if (t.added.length) h += sec('More reps', 'The next few at companies you\'ve already started, plus any you added. Same play: connect with no note.', t.added.map(function (e) { return card(e, true); }).join(''));
+    if (t.added.length) h += t.added.some(function (e) { return e.it.kind !== 'rep'; })
+      ? sec('More to connect with', 'Hiring managers and any extra reps at companies you\'ve already started. Same play: connect with no note.', t.added.map(function (e) { return card(e, true); }).join(''))
+      : sec('More reps', 'The next few at companies you\'ve already started, plus any you added. Same play: connect with no note.', t.added.map(function (e) { return card(e, true); }).join(''));
     t.newCos.forEach(function (n) {
       h += '<section class="co"><div class="co-head"><h2>' + coTitle(n.co) + '</h2><span class="count">' + coCount(n.items) + '</span></div>' + coInfo(n.co) +
            mgrBox(n.co) + n.items.map(function (i) { return card({ co: n.co, it: i }); }).join('') + addRepBox(n.co) + '</section>';

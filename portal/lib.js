@@ -134,6 +134,11 @@
           out.calls.push(e); return;
         }
         if (it.kind === 'prep') { if (PQ.interview(state, co) && (!s.done || (s.t && s.t.done >= ts))) out.preps.push(e); return; }
+        // A manager whose connect is scheduled for later comes forward the moment a rep says who's hiring.
+        if (it.kind === 'mgr' && day > d && co.unlocked) {
+          if (!s.done || (s.t && s.t.done >= ts)) { out.added.push(e); return; }
+          day = d - 1; // already connected: handled below like any manager from an earlier day
+        }
         if (it.kind === 'bump' && PQ.bumpHidden(state, co) && !s.done) return;
         if (day === d) {
           if (it.kind === 'call' || (it.kind === 'email' && !isNew)) out.calls.push(e); else if (it.kind === 'bump') out.bumps.push(e);
@@ -161,16 +166,18 @@
 
   /* What tomorrow holds, for the teaser. */
   PQ.tomorrow = function (queue, state) {
-    var d = ((state.day && state.day.i) || 0) + 1, calls = 0, bumps = 0, applies = 0, names = [];
+    var d = ((state.day && state.day.i) || 0) + 1, calls = 0, bumps = 0, applies = 0, more = 0, names = [];
     queue.companies.forEach(function (co) {
       var isNew = false;
       co.items.forEach(function (it) {
         var day = PQ.dayOf(co, it); if (day !== d) return;
-        if (it.kind === 'call') calls++; else if (it.kind === 'bump') { if (!PQ.bumpHidden(state, co)) bumps++; } else if (it.kind === 'apply') applies++; else if (it.kind !== 'email' || (co.start || 0) === d) isNew = true;
+        if (it.kind === 'call') calls++; else if (it.kind === 'bump') { if (!PQ.bumpHidden(state, co)) bumps++; } else if (it.kind === 'apply') applies++;
+        else if (it.wave > 1 && (co.start || 0) !== d) { if (!PQ.st(state, it.id).done) more++; } // later connects at a company already started
+        else if (it.kind !== 'email' || (co.start || 0) === d) isNew = true;
       });
       if (isNew) names.push(co.name);
     });
-    return { d: d, calls: calls, bumps: bumps, applies: applies, names: names, empty: !calls && !bumps && !applies && !names.length };
+    return { d: d, calls: calls, bumps: bumps, applies: applies, more: more, names: names, empty: !calls && !bumps && !applies && !more && !names.length };
   };
   PQ.plural = function (n, w) { return n + ' ' + w + (n === 1 ? '' : 's'); };
   PQ.daySummary = function (t) {
@@ -180,7 +187,7 @@
     if (t.newCos.length) parts.push(t.newCos.length + (t.newCos.length === 1 ? ' new company' : ' new companies'));
     if (t.bumps.length) parts.push(PQ.plural(t.bumps.length, 'bump'));
     if (t.applies && t.applies.length) parts.push(t.applies.length + ' to apply to');
-    if (t.added.length) parts.push(t.added.length + ' more ' + (t.added.length === 1 ? 'rep' : 'reps'));
+    if (t.added.length) parts.push(t.added.some(function (e) { return e.it.kind !== 'rep'; }) ? t.added.length + ' more to connect with' : t.added.length + ' more ' + (t.added.length === 1 ? 'rep' : 'reps'));
     if (t.leftovers.length) parts.push(t.leftovers.length + ' left over');
     if (t.fu && t.fu.length) parts.push(PQ.plural(t.fu.length, 'follow-up'));
     if (t.preps.length) parts.push('interview prep');
