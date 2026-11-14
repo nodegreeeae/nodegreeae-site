@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B0E14">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Clients · No Degree AE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/portal/portal.css?v=2">
+</head>
+<body>
+<div class="top">
+  <div class="wrap wide">
+    <div class="bar1">
+      <div class="brand"><i></i>No Degree AE · Clients</div>
+      <div class="whose"><span id="sum"></span> <button class="b sm" id="refresh" hidden>Refresh</button></div>
+    </div>
+  </div>
+</div>
+<main><div class="wrap wide" id="view"><div class="center"><p>Loading…</p></div></div></main>
+<div class="wrap wide acct" id="acct" hidden></div>
+
+<script src="/portal/supabase.js?v=2.119.0"></script>
+<script src="/portal/lib.js?v=2"></script>
+<script src="/portal/sb.js?v=2"></script>
+<script>
+(function () {
+  'use strict';
+  var esc = PQ.esc, HDR = {};
+  var CLIENTS = [], NOW = Date.now(), OPEN = {}, ARMED = null, FORM = { text: '', target: '', reset: false, msg: '', name: '', email: '' };
+  var view = document.getElementById('view');
+
+  function fail(t, s) { view.innerHTML = '<div class="center"><h2>' + esc(t) + '</h2><p>' + esc(s) + '</p></div>'; }
+  function link() { return location.origin + '/portal/'; }
+  function load(quiet) {
+    return PQ.api({ op: 'admin.list' }, HDR).then(function (r) {
+      if (r.status === 401) return PQ.start(begin);
+      if (r.status === 404) return fail('Nothing here', 'This page is for Sam.');
+      if (r.status !== 200) { if (!quiet) fail('Couldn\'t load', 'Something went wrong. Reload the page.'); return; }
+      CLIENTS = r.body.clients; NOW = r.body.now || Date.now();
+      document.getElementById('refresh').hidden = false; render();
+    }, function () { if (!quiet) fail('You\'re offline', 'Check your connection and reload.'); });
+  }
+
+  function flags(c, tot, t) {
+    var s = c.state, f = '';
+    if (c.role === 'admin') f += '<span class="flag good">You · test page</span>';
+    if (!c.queue.companies.length) return f + '<span class="flag gold">No list loaded yet</span>';
+    if (tot.interviews) f += '<span class="flag good">' + PQ.plural(tot.interviews, 'interview') + '</span>';
+    if ((s.reqs || []).length) f += '<span class="flag gold">' + s.reqs.length + ' to check</span>';
+    var started = c.queue.companies.filter(function (co) { return co.items.some(function (i) { return PQ.st(s, i.id).done; }); }).map(function (co) { return co.n; });
+    var noMgr = PQ.merge(c.queue, s).companies.filter(function (co) { return !co.mgr && started.indexOf(co.n) >= 0; }).length;
+    if (noMgr) f += '<span class="flag gold">' + noMgr + ' started, no manager</span>';
+    if (!s.firstSeen) f += '<span class="flag">Hasn\'t opened it</span>';
+    else if (!s.lastTap) f += '<span class="flag">Opened, no taps</span>';
+    else if (NOW - s.lastTap > 2 * 864e5) f += '<span class="flag">Quiet ' + Math.floor((NOW - s.lastTap) / 864e5) + ' days</span>';
+    if (t.past || (PQ.tomorrow(c.queue, s).empty && t.d >= PQ.lastDay(c.queue))) f += '<span class="flag">Needs companies</span>';
+    return f;
+  }
+  function row(c) {
+    var s = c.state, q = PQ.merge(c.queue, s), t = PQ.today(q, s), tot = PQ.totals(q, s), act = PQ.activity(s, 7, NOW), max = Math.max.apply(null, act.map(function (d) { return d.n; }).concat([1]));
+    var h = '<div class="row" id="row-' + c.key + '">';
+    h += '<div class="row-top"><div><b>' + esc(c.name) + '</b>' + flags(c, tot, t) + '</div><span>' + esc(c.label || '') + '</span></div>';
+    h += '<p class="foot" style="margin-top:4px">Signs in with ' + esc(c.email) + '</p>';
+    if (!c.queue.companies.length && c.role === 'admin') return h + '<p class="foot">Your own test page. It has no list loaded, so there\'s nothing to try yet.</p></div>';
+    if (!c.queue.companies.length) return h + '<p class="foot">They can sign in now and will see "Your list is being built" until a list is loaded.</p>' +
+      '<div class="acts"><button class="b sm" data-act="copylink" data-key="' + c.key + '">Copy the sign-in link</button>' +
+      (c.role === 'admin' ? '' : '<button class="undo" data-act="del" data-key="' + c.key + '">' + (ARMED === c.key ? 'Tap again to delete ' + esc(c.name) : 'Delete') + '</button>') + '</div></div>';
+    h += '<p class="foot" style="margin-top:4px">Day ' + (t.d + 1) + ' · last tap ' + PQ.rel(s.lastTap, NOW) + ' · last opened ' + PQ.rel(s.lastSeen, NOW) + ' · ' + tot.started + ' of ' + tot.companies + ' companies started</p>';
+    h += '<div class="nums"><div><b>' + t.done + '/' + t.total + '</b><span>Today</span></div><div><b>' + tot.sent + '</b><span>Steps done</span></div><div><b>' + tot.accepted + '</b><span>Accepted</span></div><div><b>' + tot.replies + '</b><span>Replies</span></div>' +
+         '<div><b>' + tot.repCalls + '</b><span>Rep calls</span></div><div><b>' + tot.referrals + '</b><span>Referrals</span></div><div><b>' + tot.meetings + '</b><span>Mgr meetings</span></div><div class="' + (tot.interviews ? 'hot' : '') + '"><b>' + tot.interviews + '</b><span>Interviews</span></div></div>';
+    if ((s.reqs || []).length) {
+      h += '<div class="plain gold reqs"><h3>' + esc(PQ.first(c.name)) + ' found companies. Check them before they go in.</h3>' + s.reqs.map(function (r) {
+        return '<div class="msg">' + esc(r.text) + '</div><div class="acts"><button class="b sm" data-act="reqdone" data-key="' + c.key + '" data-id="' + esc(r.id) + '">Handled</button><span class="lab">sent ' + PQ.rel(r.t, NOW) + '</span></div>';
+      }).join('') + '<p class="lab" style="margin-top:8px">Add the good ones to their queue file (mark them yours), list the rest under cut with the reason, then update the client below.</p></div>';
+    }
+    h += '<div class="spark" title="Taps per day, last 7 days">' + act.map(function (d) { return '<div><i class="' + (d.n ? '' : 'z') + '" style="height:' + (d.n ? Math.max(12, Math.round(100 * d.n / max)) : 6) + '%"></i><span>' + d.label + (d.n ? ' ' + d.n : '') + '</span></div>'; }).join('') + '</div>';
+    var cos = q.companies.map(function (co) {
+      var items = co.items.filter(function (i) { return i.kind !== 'prep'; }), d = items.filter(function (i) { return PQ.st(s, i.id).done; }).length;
+      var mg = co.mgr ? esc(co.mgr.name) + (co.mgr.fromRep ? ' (from a rep)' : '') : '<span style="color:var(--bad)">no manager yet</span>';
+      return '<div><div>' + co.n + '. ' + esc(co.name) + (PQ.interview(s, co) ? '<span class="iv">Interview</span>' : '') + ' <span class="lab">· ' + mg + '</span></div><span>' + d + '/' + items.length + '</span></div>';
+    }).join('');
+    var log = (s.log || []).slice(-15).reverse().map(function (e) {
+      var d = new Date(e.t); return '<div>' + d.toLocaleDateString([], { weekday: 'short' }) + ' ' + d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + ' · <b>' + esc(PQ.describe(q, e)) + '</b></div>';
+    }).join('') || '<div>No taps yet.</div>';
+    h += '<details class="box" data-k="d' + c.key + '"' + (OPEN['d' + c.key] ? ' open' : '') + ' style="background:var(--bg2)"><summary>Companies and recent taps <span class="r">' + (s.log || []).length + ' taps total</span></summary>' +
+         '<div class="colist">' + cos + '</div><div class="log">' + log + '</div></details>';
+    h += '<div class="acts"><button class="b sm" data-act="copylink" data-key="' + c.key + '">Copy the sign-in link</button>' +
+         '<a class="b sm" href="/portal/#ro=' + c.key + '" target="_blank" rel="noopener">See their page (read-only)</a>' +
+         (c.role === 'admin' ? '' : '<button class="undo" data-act="del" data-key="' + c.key + '">' + (ARMED === c.key ? 'Tap again to delete ' + esc(c.name) + ' and all their progress' : 'Delete') + '</button>') + '</div>';
+    return h + '</div>';
+  }
+  function form() {
+    var opts = '<option value="">New client</option>' + CLIENTS.map(function (c) { return '<option value="' + c.key + '"' + (FORM.target === c.key ? ' selected' : '') + '>Update ' + esc(c.name) + '</option>'; }).join('');
+    return '<details class="box" data-k="form"' + (OPEN.form ? ' open' : '') + ' style="margin-top:24px"><summary>Add or update a client <span class="r">name + email</span></summary>' +
+      '<label class="field">Who <select id="f-target" style="margin-left:6px;background:var(--bg2);border:1px solid var(--line2);border-radius:8px;padding:4px 8px">' + opts + '</select></label>' +
+      '<label class="field">First name<input class="txt" id="f-name" maxlength="60" autocomplete="off" placeholder="' + (FORM.target ? 'Leave blank to keep it' : 'First name') + '" value="' + esc(FORM.name) + '"></label>' +
+      '<label class="field">The email they\'ll sign in with<input class="txt" id="f-email" type="email" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="' + (FORM.target ? 'Leave blank to keep it' : 'name@email.com') + '" value="' + esc(FORM.email) + '"></label>' +
+      '<label class="field">Queue file contents (optional, Claude loads this)<textarea id="f-text" spellcheck="false" placeholder=\'{"name":"...","label":"...","queue":{...}}\'>' + esc(FORM.text) + '</textarea></label>' +
+      '<label class="field"><input type="checkbox" id="f-reset"' + (FORM.reset ? ' checked' : '') + '> Wipe their progress (only when starting someone over)</label>' +
+      '<div class="acts"><button class="b primary" data-act="save">Save</button><span class="lab" id="f-msg">' + esc(FORM.msg) + '</span></div></details>';
+  }
+  function render() {
+    var tapped = 0, iv = 0, today = PQ.localDate(new Date(NOW));
+    var real = CLIENTS.filter(function (c) { return c.role !== 'admin'; }); // Sam's own test page doesn't count
+    real.forEach(function (c) { if (c.state.lastTap && PQ.localDate(new Date(c.state.lastTap)) === today) tapped++; iv += PQ.totals(c.queue, c.state).interviews; });
+    document.getElementById('sum').textContent = PQ.plural(real.length, 'client') + ' · ' + tapped + ' tapped today · ' + PQ.plural(iv, 'interview');
+    view.innerHTML = (CLIENTS.length ? CLIENTS.map(row).join('') : '<div class="center"><h2>No clients yet</h2><p>Add one below.</p></div>') + form();
+  }
+  function c0(key) { return CLIENTS.filter(function (x) { return x.key === key; })[0]; }
+  function put(obj, key, reset) {
+    var body = { op: 'admin.put' }; ['name', 'label', 'queue', 'email'].forEach(function (k) { if (obj[k] !== undefined && obj[k] !== '') body[k] = obj[k]; });
+    if (key) body.key = key; if (reset) body.resetState = true;
+    return PQ.api(body, HDR);
+  }
+  window.PORTAL = { put: put, list: function () { return CLIENTS; }, reload: load }; // lets the queue be loaded by script as well as by paste
+
+  view.addEventListener('toggle', function (e) { var k = e.target.getAttribute && e.target.getAttribute('data-k'); if (k) OPEN[k] = e.target.open; }, true);
+  view.addEventListener('input', function (e) { if (e.target.id === 'f-text') FORM.text = e.target.value; if (e.target.id === 'f-name') FORM.name = e.target.value; if (e.target.id === 'f-email') FORM.email = e.target.value; if (e.target.id === 'f-reset') FORM.reset = e.target.checked; });
+  view.addEventListener('change', function (e) { if (e.target.id === 'f-target') { FORM.target = e.target.value; render(); } if (e.target.id === 'f-reset') FORM.reset = e.target.checked; });
+  view.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]'); if (!b) return;
+    var act = b.getAttribute('data-act'), key = b.getAttribute('data-key');
+    var c = CLIENTS.filter(function (x) { return x.key === key; })[0];
+    if (act === 'copylink') { PQ.copy(link(), b); return; }
+    if (act === 'reqdone') { PQ.api({ op: 'admin.reqs', key: key, done: [b.getAttribute('data-id')] }, HDR).then(function () { load(); }); return; }
+    if (act === 'del') {
+      if (ARMED !== key) { ARMED = key; render(); return; }
+      ARMED = null; PQ.api({ op: 'admin.del', key: key }, HDR).then(function () { load(); }); return;
+    }
+    if (act === 'save') {
+      var obj = {}, file = null, nm = FORM.name.trim(), em = FORM.email.trim().toLowerCase();
+      if (FORM.text.trim()) {
+        try { file = JSON.parse(FORM.text); } catch (err) { FORM.msg = 'That isn\'t valid JSON.'; render(); return; }
+        if (!file || !file.queue) { FORM.msg = 'The queue file needs a queue.'; render(); return; }
+        obj.queue = file.queue; if (file.label !== undefined) obj.label = file.label; if (file.name) obj.name = file.name;
+      }
+      if (nm) obj.name = nm; if (em) obj.email = em;
+      if (!FORM.target && !obj.name) { FORM.msg = 'Needs their first name.'; render(); return; }
+      if (!FORM.target && !obj.email) { FORM.msg = 'Needs the email they\'ll sign in with.'; render(); return; }
+      if (em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { FORM.msg = 'That doesn\'t look like an email.'; render(); return; }
+      if (FORM.target && !obj.name && !obj.email && !obj.queue && !FORM.reset) { FORM.msg = 'Nothing to change.'; render(); return; }
+      var shown = obj.name || (c0(FORM.target) || {}).name || 'them';
+      FORM.msg = 'Saving…'; render();
+      put(obj, FORM.target || null, FORM.reset).then(function (r) {
+        if (r.status !== 200) { FORM.msg = r.body.error === 'email_in_use' ? 'Not saved: that email is already on the list.' : 'Not saved: ' + (r.body.error || r.status); render(); return; }
+        FORM = { text: '', target: '', reset: false, name: '', email: '', msg: (r.body.created ? 'Added ' : 'Updated ') + shown + '.' + (r.body.created ? ' They can sign in at nodegreeae.com/portal with that email.' : '') }; load();
+      }, function () { FORM.msg = 'Offline. Not saved.'; render(); });
+    }
+  });
+  document.getElementById('refresh').addEventListener('click', function () { load(); });
+  function begin(me) { if (me.role !== 'admin') return fail('Nothing here', 'This page is for Sam.'); load(); }
+  setInterval(function () { if (!document.hidden && !OPEN.form && PQ.me() && PQ.me().role === 'admin') load(true); }, 60000);
+  PQ.start(begin);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B0E14">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Client portal · No Degree AE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/portal/portal.css?v=2">
+</head>
+<body>
+<div class="top">
+  <div class="wrap">
+    <div class="bar1">
+      <div class="brand"><i></i>No Degree AE</div>
+      <div class="whose"><span id="whose"></span><span class="save" id="save"></span></div>
+    </div>
+    <div class="tabs" role="tablist" id="tabs" hidden>
+      <button role="tab" data-view="today" aria-selected="true">Today</button>
+      <button role="tab" data-view="list" aria-selected="false">Full list</button>
+    </div>
+    <div class="prog" id="prog" hidden>
+      <div class="prog-row"><b id="prog-n"></b><span id="prog-t"></span></div>
+      <div class="track"><i id="prog-bar"></i></div>
+    </div>
+  </div>
+</div>
+<div class="banner" id="banner" hidden></div>
+<div class="tbar" id="tbar" hidden><span>Your test page. Clients never see it.</span><span><button id="t-next">Skip to next day</button> <button id="t-reset">Start over</button></span></div>
+<main><div class="wrap" id="view"><div class="center"><p>Loading…</p></div></div></main>
+<div class="wrap acct" id="acct" hidden></div>
+
+<script src="/portal/supabase.js?v=2.119.0"></script>
+<script src="/portal/lib.js?v=2"></script>
+<script src="/portal/sb.js?v=2"></script>
+<script>
+(function () {
+  'use strict';
+  var esc = PQ.esc, marked = PQ.marked, st = function (id) { return PQ.st(S, id); };
+  // Sam can open any client's page read-only from his dashboard: /portal/#ro=<client id>. Row-level security decides if that's allowed.
+  var RO = /^#ro=/.test(location.hash), ROID = RO ? location.hash.slice(4) : null, HDR = {};
+  var RAW = null, Q = null, S = null, VIEW = 'today', OPEN = {}, outbox = [], sending = false, DRAFT = '', REPDRAFT = {}, MGRDRAFT = {};
+  // RAW is the queue Sam loaded. Q is RAW plus any reps the client added themselves.
+  var view = document.getElementById('view'), banner = document.getElementById('banner'), saveEl = document.getElementById('save');
+  if (RO) document.body.className = 'ro';
+
+  /* ---------- loading ---------- */
+  function fail(title, text, retry) {
+    document.getElementById('tabs').hidden = true; document.getElementById('prog').hidden = true;
+    view.innerHTML = '<div class="center"><h2>' + esc(title) + '</h2><p>' + esc(text) + '</p>' + (retry ? '<div class="acts" style="justify-content:center"><button class="b primary" id="retry">Try again</button></div>' : '') + '</div>';
+    if (retry) document.getElementById('retry').addEventListener('click', load);
+  }
+  function load() {
+    PQ.api({ op: 'get', ro: RO, id: ROID }, HDR).then(function (r) {
+      if (r.status === 401) return PQ.start(load);
+      if (r.status === 404) return fail('Nothing here', RO ? 'That client isn\'t on the list anymore.' : 'Your page isn\'t set up yet. Text Sam.');
+      if (r.status !== 200) return fail('Couldn\'t load your queue', 'Something went wrong on our side.', true);
+      if (!r.body.queue.companies.length) {
+        if (!RO && PQ.me().role === 'admin') { location.replace('/portal/hq.html'); return; }
+        document.getElementById('whose').textContent = r.body.name;
+        return fail('Your list is being built', 'Sam is putting your companies together. He\'ll tell you when it\'s ready. Your page will be right here.');
+      }
+      RAW = r.body.queue; S = r.body.state;
+      if (!S.items) S.items = {}; if (!S.day) S.day = { i: 0, date: null, taps: 0, ts: null };
+      Q = PQ.merge(RAW, S);
+      document.getElementById('whose').textContent = r.body.name + (r.body.label ? ' · ' + r.body.label : '');
+      document.title = r.body.name + '\'s queue · No Degree AE';
+      document.getElementById('tabs').hidden = false;
+      if (RO) { banner.className = 'banner info'; banner.textContent = 'Read-only view. Taps are off, and this doesn\'t count as the client opening the page.'; banner.hidden = false; }
+      return maybeAdvance().then(render);
+    }, function () { fail('You\'re offline', 'Check your connection and try again.', true); });
+  }
+  /* A new calendar day moves the queue forward one day, but only if yesterday was worked (or had nothing in it). */
+  function maybeAdvance() {
+    var today = PQ.localDate(), day = S.day;
+    if (RO || !day.date || day.date >= today) return Promise.resolve();
+    var t = PQ.today(Q, S), next = ((day.taps > 0 || t.total === 0) && !t.past) ? day.i + 1 : day.i;
+    return PQ.api({ op: 'day', i: next, d: today }, HDR).then(function (r) { if (r.status === 200) S.day = r.body.day; }, function () {});
+  }
+
+  /* ---------- saving ---------- */
+  function setSave(text, bad) { saveEl.textContent = text; saveEl.className = 'save' + (bad ? ' bad' : ''); }
+  function showBanner(text, btn, fn) {
+    banner.className = 'banner'; banner.innerHTML = esc(text) + (btn ? ' <button id="bbtn">' + esc(btn) + '</button>' : ''); banner.hidden = false;
+    if (btn) document.getElementById('bbtn').addEventListener('click', fn);
+  }
+  function hideBanner() { if (!RO) banner.hidden = true; }
+  function pump() {
+    if (sending || !outbox.length) return;
+    sending = true; setSave('Saving…'); attempt(outbox[0], 0);
+  }
+  function attempt(job, n) {
+    PQ.api(job.body, HDR).then(function (r) {
+      if (r.status === 200) {
+        outbox.shift(); sending = false; hideBanner();
+        if (job.body.op === 'day') { S.day = r.body.day; render(); window.scrollTo(0, 0); }
+        if (job.body.op === 'suggest') { S.reqs = r.body.reqs; var y = window.scrollY; render(); window.scrollTo(0, y); }
+        if (job.body.op === 'setmgr') { S.mgr = r.body.mgr; Q = PQ.merge(RAW, S); var y3 = window.scrollY; render(); window.scrollTo(0, y3); }
+        if (job.body.op === 'addrep' || job.body.op === 'delrep') { S.extra = r.body.extra; if (job.body.op === 'delrep') delete S.items[job.body.id]; Q = PQ.merge(RAW, S); var y2 = window.scrollY; render(); window.scrollTo(0, y2); }
+        if (outbox.length) pump(); else setSave('Saved');
+      } else if (r.status >= 500 && n < 3) {
+        setTimeout(function () { attempt(job, n + 1); }, 1200 * (n + 1));
+      } else {
+        outbox.length = 0; sending = false; setSave('Not saved', true);
+        showBanner('That didn\'t save. Reloading your queue.'); load();
+      }
+    }, function () {
+      if (n < 3) return setTimeout(function () { attempt(job, n + 1); }, 1500 * (n + 1));
+      sending = false; setSave('Not saved', true);
+      showBanner('You\'re offline. Your last taps aren\'t saved yet.', 'Retry', pump);
+    });
+  }
+  function tap(id, set, undo) {
+    if (RO) return;
+    var now = Date.now();
+    if (undo) { delete S.items[id]; }
+    else { var it = S.items[id] || (S.items[id] = { t: {} }); if (!it.t) it.t = {}; set.forEach(function (f) { if (!it[f]) { it[f] = true; it.t[f] = now; (it.d || (it.d = {}))[f] = S.day.i || 0; } }); }
+    if (!S.day.date) { S.day.date = PQ.localDate(); S.day.ts = now; }
+    S.day.taps = (S.day.taps || 0) + 1;
+    outbox.push({ body: undo ? { op: 'tap', id: id, undo: true, d: PQ.localDate() } : { op: 'tap', id: id, set: set, d: PQ.localDate() } });
+    Q = PQ.merge(RAW, S); // a rep call can unlock the manager steps and change who they're written around
+    pump();
+  }
+  /* The client found companies on their own. They go to Sam to check, never straight into the queue. */
+  function suggest() {
+    var text = DRAFT.trim(); if (RO || !text) return;
+    if (!S.reqs) S.reqs = [];
+    S.reqs.push({ id: 'tmp' + Date.now(), t: Date.now(), text: text.slice(0, 2000) }); DRAFT = '';
+    outbox.push({ body: { op: 'suggest', text: text.slice(0, 2000) } }); pump();
+  }
+  /* The client found another SDR or BDR at a company on their list. It goes straight in; the messages write themselves. */
+  function addRep(n) {
+    var d = REPDRAFT[n] || {}, name = (d.name || '').trim(); if (RO || !name) return;
+    REPDRAFT[n] = {}; outbox.push({ body: { op: 'addrep', co: n, name: name.slice(0, 60), url: (d.url || '').trim() } }); pump();
+  }
+  /* Who's hiring. Sam only lists someone he checked. If not listed (or a rep says it's someone else), the client types the name. */
+  function setMgr(n, clear) {
+    if (RO) return; var d = MGRDRAFT[n] || {}, name = clear ? '' : (d.name || '').trim();
+    if (!clear && !name) return;
+    MGRDRAFT[n] = {}; S.mgr = S.mgr || {};
+    if (name) S.mgr[n] = { name: name.slice(0, 60), url: (d.url || '').trim(), t: Date.now() }; else delete S.mgr[n];
+    Q = PQ.merge(RAW, S);
+    outbox.push({ body: { op: 'setmgr', co: n, name: name.slice(0, 60), url: (d.url || '').trim() } }); pump();
+    var y = window.scrollY; render(); window.scrollTo(0, y);
+  }
+  function mgrBox(co) {
+    var m = co.mgr, d = MGRDRAFT[co.n] || {}, open = !m || OPEN['mg' + co.n], h = '<div class="mgrbox' + (m ? '' : ' none') + '" id="mgr-' + co.n + '">';
+    if (m) {
+      h += '<p><span class="lab">Hiring manager</span><br><b>' + esc(m.name) + '</b> · ' + esc(m.role) + (m.fromRep ? ' <span class="tick">from a rep</span>' : ' <span class="lab">(checked by Sam)</span>') + '</p>';
+      h += m.fromRep ? '<div class="acts">' + '<button class="undo" data-act="clearmgr" data-co="' + co.n + '">Wrong name? Clear it</button></div>'
+                     : '<p class="lab">A rep says it\'s someone else? <button class="undo" data-act="openmgr" data-co="' + co.n + '">Change it</button></p>';
+    } else {
+      h += '<p><span class="lab">Hiring manager</span><br><b>Not confirmed yet.</b> ' + esc(co.mgrNote || 'Ask a rep who runs the team.') + '</p>' +
+           '<p class="lab" style="margin-top:4px">The manager call and email show up once you add the name.</p>';
+    }
+    if (open && !(m && m.fromRep)) {
+      h += '<input class="txt mg-name" data-co="' + co.n + '" placeholder="Name the rep gave you" maxlength="60" value="' + esc(d.name || '') + '"' + (RO ? ' disabled' : '') + '>' +
+           '<input class="txt mg-url" data-co="' + co.n + '" placeholder="Their LinkedIn link (optional)" value="' + esc(d.url || '') + '"' + (RO ? ' disabled' : '') + '>' +
+           '<div class="acts"><button class="b primary" data-act="setmgr" data-co="' + co.n + '">Save manager</button></div>';
+    }
+    return h + '</div>';
+  }
+  function addRepBox(co) {
+    if (!co.tpl) return '';
+    var d = REPDRAFT[co.n] || {}, nm = co.short || co.name;
+    var s = function (label, words) { return ext(label, PQ.search(words), 'lk'); };
+    return det('ar' + co.n, 'addrep', 'Add a rep you found <span class="r">SDRs and BDRs only</span>',
+      '<p class="lab" style="margin-top:6px">The list has the best ones, not all of them. If nobody answers, find more here: </p>' +
+      '<div class="links">' + s('SDR', nm + ' SDR') + s('BDR', nm + ' BDR') + s('Sales development', nm + ' sales development') + s('Business development', nm + ' business development representative') + '</div>' +
+      '<p class="lab" style="margin-top:8px">Pick the newest ones. Never AEs, they don\'t hire for this role.</p>' +
+      '<input class="txt ar-name" data-co="' + co.n + '" placeholder="Their name" maxlength="60" value="' + esc(d.name || '') + '"' + (RO ? ' disabled' : '') + '>' +
+      '<input class="txt ar-url" data-co="' + co.n + '" placeholder="Their LinkedIn link (optional)" value="' + esc(d.url || '') + '"' + (RO ? ' disabled' : '') + '>' +
+      '<div class="acts"><button class="b primary" data-act="addrep" data-co="' + co.n + '">Add them</button></div>');
+  }
+  function addBox() {
+    var reqs = S.reqs || [], h = '<div class="plain" id="addbox" style="margin-top:30px"><h3>Found a company you want?</h3>' +
+      '<p>Paste job links or company names, one per line. A link to a doc works too. Sam checks every one (score, pay, who they actually hire) before it goes in your queue.</p>' +
+      '<textarea id="add-text" class="plaintext" ' + (RO ? 'disabled ' : '') + 'placeholder="https://www.linkedin.com/jobs/view/...&#10;Acme, SDR, Atlanta">' + esc(DRAFT) + '</textarea>' +
+      '<div class="acts"><button class="b primary" data-act="suggest">Send to Sam</button></div>';
+    if (reqs.length) h += '<div class="next" id="pending"><p class="lab">Sam\'s checking these. The good ones show up in your queue with everything written.</p>' +
+      reqs.map(function (r) { return '<div class="msg">' + esc(r.text) + '</div>'; }).join('') + '</div>';
+    return h + '</div>';
+  }
+  function cutBox() {
+    if (!Q.cut || !Q.cut.length) return '';
+    return '<div class="plain" id="cutbox"><h3>Checked and cut</h3>' + Q.cut.map(function (c) { return '<p><b>' + esc(c[0]) + '.</b> ' + esc(c[1]) + '</p>'; }).join('') + '</div>';
+  }
+  function nextDay() {
+    if (RO) return;
+    outbox.push({ body: { op: 'day', i: S.day.i + 1, d: PQ.localDate() } }); pump();
+  }
+
+  /* ---------- pieces ---------- */
+  var CHIP = { rep: ['Rep', ''], mgr: ['Manager', 'mgr'], email: ['Manager', 'mgr'], apply: ['Apply', 'soft'], rec: ['Recruiter', 'soft'], call: ['Call', 'mgr'], bump: ['Bump', 'mgr'], prep: ['Interview', ''] };
+  function doneLabel(i, s) {
+    if (i.kind === 'call') return s.booked ? 'Booked a call' : 'Called';
+    return { rep: i.find ? 'Requests sent' : 'Request sent', mgr: 'Request sent', email: 'Email sent', apply: 'Applied', rec: 'Request sent', bump: 'Bump sent', prep: 'Sent' }[i.kind];
+  }
+  function ext(label, url, cls) { return '<a class="' + (cls || 'b') + '" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' + esc(label) + '</a>'; }
+  function btn(act, id, label, primary, f, sm) { return '<button class="b' + (primary ? ' primary' : '') + (sm ? ' sm' : '') + '" data-act="' + act + '" data-id="' + id + '"' + (f ? ' data-f="' + f + '"' : '') + '>' + label + '</button>'; }
+  function undo(id, label) { return '<button class="undo" data-act="undo" data-id="' + id + '">' + (label || 'Undo') + '</button>'; }
+  var PSHELP = '<p class="lab">P.S. ideas, only something true: "Still looking for good food spots in Midtown, any recommendations?" · "Saw you ran track at Georgia State, I ran in high school." · "Your post on cold calling objections was gold."</p>';
+  function msgBox(text, subject) {
+    return '<div class="msg">' + (subject ? '<span class="subj">Subject: ' + esc(subject) + '</span>' : '') + marked(text) + '</div>' + (PQ.hasBlank(text) ? '<p class="fill">Fill in the gold parts before you send.</p>' : '');
+  }
+  var WAIT = { 1: ['waiting to accept', 'accepted', 'They accepted'], 3: ['waiting on a reply', 'replied', 'They replied'], 5: ['set up the 15 minutes', 'call', 'Call booked'], 8: ['waiting on the referral', 'referred', 'They referred me'] };
+
+  /* The one follow-up: a voice memo, 2 days after the first message with no reply. */
+  function fuBlock(i, s, co) {
+    if (!i.fu) return '';
+    if (s.fu) return '<p class="lab"><span class="tick">&#10003; Voice memo sent.</span> That was the last nudge. If they answer, tap it.</p>';
+    if (!PQ.fuDue(S, co, i)) return '';
+    return '<p class="lab">No reply in 2 days. Send a voice memo: open your chat with them in the LinkedIn app on your phone, hold the mic button, smile, and say this in your own words. Keep it under 30 seconds. One nudge, then let it go.</p>' + msgBox(i.fu) +
+      '<p class="lab"><b>Make it personal.</b> If they post on LinkedIn, mention one of their posts. If you notice anything else on their profile, like a school, a hobby or a team they\'re on, work that in. Only say what\'s true.</p>' +
+      '<div class="acts">' + btn('copy', i.id, 'Copy script', false, 'fu') + (i.url ? ext('Open LinkedIn', i.url) : '') + btn('fu', i.id, 'Voice memo sent', true) + '</div>';
+  }
+  function repBody(i, s, co) {
+    var stg = PQ.repStage(s), who = i.find ? 'them' : PQ.first(i.name), h = '';
+    var rm = i.extra ? '<button class="undo" data-act="delrep" data-id="' + i.id + '">Remove</button>' : '';
+    if (stg === 0) return '<p class="do"><b>Connect. No note.</b></p><div class="acts">' + ext(i.find ? 'Find reps' : 'Open LinkedIn', i.url) + btn('done', i.id, doneLabel(i, s), true) + rm + '</div>';
+    h += '<div class="next">';
+    if (stg === 1) h += '<p class="lab">Waiting on ' + esc(who) + ' to accept. The next message is ready when they do.</p><div class="acts">' + btn('accepted', i.id, 'They accepted') + '</div>';
+    if (stg === 2) h += '<p class="lab">They accepted. Send this today with your resume attached. Fill in the gold parts: your two time windows once, and the P.S. The best messages come from customization, so if you see something better on their profile, lead with that.</p>' + msgBox(i.m1) + PSHELP + '<div class="acts">' + btn('copy', i.id, 'Copy message', false, 'm1') + ext('Open LinkedIn', i.url) + btn('m1', i.id, 'Sent', true) + '</div>';
+    if (stg === 3) h += '<p class="lab">Message sent. Tap when ' + esc(who === 'them' ? 'one of them' : who) + ' answers.</p><div class="acts">' + btn('replied', i.id, 'They replied') + '</div>' + fuBlock(i, s, co);
+    if (stg === 4) h += '<p class="lab">They answered. ' + (co && !co.mgr ? '<b style="color:var(--gold2)">If they named who\'s hiring, save it under Hiring manager for ' + esc(co.name) + '.</b> ' : '') + 'Lock in a time.</p>' + msgBox(i.m2) + '<div class="acts">' + btn('copy', i.id, 'Copy message', false, 'm2') + ext('Open LinkedIn', i.url) + btn('m2', i.id, 'Sent', true) + '</div>';
+    if (stg === 5) h += '<p class="lab">They replied. Set up the 15 minutes and send a calendar invite with your number. Tap when it\'s on the calendar.</p><div class="acts">' + btn('call', i.id, 'Call booked', true) + '</div>';
+    if (stg === 6) h += '<p class="lab"><span class="tick">&#10003; Call booked.</span> 15 minutes. Learn the team, find out who\'s hiring, then ask for the referral.</p>' + msgBox(i.callq) + '<div class="acts">' + btn('talked', i.id, 'Call done', true) + '</div>';
+    if (stg === 7) h += '<p class="lab">Send this the same day. ' + (co && !co.mgr ? '<b style="color:var(--gold2)">If they named who\'s hiring, save it under Hiring manager for ' + esc(co.name) + '.</b> ' : '') + 'If they said yes to referring you, do exactly what they told you, then tap "They referred me."</p>' + msgBox(i.m3) +
+      '<p class="lab">For the gold line, something real from the call, like: "Already started watching those Gong calls you mentioned." "Good luck at your game this weekend." "Hope the move to the new team goes smooth."</p>' + '<div class="acts">' + btn('copy', i.id, 'Copy message', false, 'm3') + ext('Open LinkedIn', i.url) + btn('m3', i.id, 'Sent', true) + '</div>';
+    if (stg === 8) h += '<p class="lab">Thank-you sent. Tap when they refer you.</p><div class="acts">' + btn('referred', i.id, 'They referred me', true) + '</div>';
+    if (stg === 9) h += '<p class="lab"><span class="tick">&#10003; Referred.</span> Do what they told you, then use the Apply step for ' + esc(co ? co.name : 'this company') + ' (the recruiter message is there). Message the manager too if you haven\'t yet.</p>';
+    h += '<div class="acts" style="margin-top:4px">' + undo(i.id, 'Start this person over') + rm + '</div></div>';
+    return h;
+  }
+  /* Manager: connect with no note on day 1. The LinkedIn message only goes out once a rep has said who's hiring, and names that rep. */
+  function mgrBody(i, s, co) {
+    var who = PQ.first(i.name);
+    if (!s.done) return '<p class="do"><b>Connect. No note.</b> Don\'t message them yet.</p><div class="acts">' + ext('Open LinkedIn', i.url) + btn('done', i.id, 'Request sent', true) + '</div>';
+    if (!i.dm) return undo(i.id);
+    var h = '<div class="next">';
+    if (!s.accepted) h += '<p class="lab">Waiting on ' + esc(who) + ' to accept.</p><div class="acts">' + btn('accepted', i.id, 'They accepted') + '</div>';
+    else if (!s.m1 && !(co && co.unlocked)) h += '<p class="lab">Connected. Your message to ' + esc(who) + ' unlocks once a rep tells you who\'s hiring. A message that names someone on their team gets read, a cold one gets buried.</p>';
+    else if (!s.m1) h += '<p class="lab">A rep pointed you here. Send this first, then make the call (it\'s under Calls first).</p>' + msgBox(i.dm) + '<div class="acts">' + btn('copy', i.id, 'Copy message', false, 'dm') + ext('Open LinkedIn', i.url) + btn('m1', i.id, 'Sent', true) + '</div>';
+    else if (s.replied) h += '<p class="lab"><span class="tick">&#10003; They replied.</span> Text Sam so you\'re ready for the next step.</p>';
+    else h += '<p class="lab">Message sent. Tap when ' + esc(who) + ' answers.</p><div class="acts">' + btn('replied', i.id, 'They replied') + '</div>' + fuBlock(i, s, co);
+    return h + '<div class="acts" style="margin-top:4px">' + undo(i.id, 'Start this person over') + '</div></div>';
+  }
+  function card(e, showCo) {
+    var i = e.it, s = st(i.id), c = CHIP[i.kind], h = '';
+    h += '<div class="card-top"><div class="chips"><span class="chip ' + c[1] + '">' + c[0] + '</span>' + (showCo && i.name.indexOf('(') < 0 ? '<span class="coname">' + esc(e.co.name) + '</span>' : '') + '</div>' +
+         (s.done ? '<span class="tick">&#10003; ' + doneLabel(i, s) + '</span>' : '') + '</div>';
+    h += '<p class="who">' + esc(i.name) + '</p><p class="role">' + esc(i.role) + '</p>';
+    if (i.kind === 'rep') h += repBody(i, s, e.co);
+    if (i.kind === 'mgr') h += mgrBody(i, s, e.co);
+    if (i.kind === 'email') {
+      h += msgBox(i.body, i.subject);
+      h += s.done ? undo(i.id) : '<div class="acts"><a class="b" href="mailto:?subject=' + encodeURIComponent(i.subject) + '&amp;body=' + encodeURIComponent(i.body) + '">Open in my email</a>' + btn('copy', i.id, 'Copy', false, 'body') + btn('done', i.id, 'Email sent', true) + '</div>';
+    }
+    if (i.kind === 'apply') h += s.done ? recBlock(e.co) + undo(i.id) : '<div class="acts">' + i.links.map(function (l) { return ext(i.links.length > 1 ? l[0] : 'Open the posting', l[1]); }).join('') + btn('done', i.id, 'Applied', true) + '</div>';
+    if (i.kind === 'rec') h += s.done ? '<p class="lab">Connected. Your message to the recruiter shows up in the Apply step the day you apply.</p>' + undo(i.id) : '<p class="do"><b>Connect. No note.</b> Don\'t message them yet.</p><div class="acts">' + ext(i.named ? 'Open LinkedIn' : 'Find recruiter', i.url) + btn('done', i.id, 'Request sent', true) + '</div>';
+    if (i.kind === 'call') h += s.done ? undo(i.id) : msgBox(i.script) + '<div class="acts">' + btn('copy', i.id, 'Copy script', false, 'script') + btn('done', i.id, 'Called, no meeting yet') + btn('booked', i.id, 'Booked a call', true) + '</div>';
+    if (i.kind === 'bump' || i.kind === 'prep') { h += msgBox(i.text); h += s.done ? undo(i.id) : '<div class="acts">' + btn('copy', i.id, 'Copy message', false, 'text') + btn('done', i.id, i.kind === 'bump' ? 'Bump sent' : 'Sent', true) + '</div>'; }
+    return '<div class="card' + (s.done ? ' done' : '') + '" id="card-' + i.id + '">' + h + '</div>';
+  }
+  /* The recruiter message, inside the Apply step once they've applied. Same day, names the referral if there is one. */
+  function recBlock(co) {
+    var r = co && co.items.filter(function (x) { return x.kind === 'rec'; })[0]; if (!r) return '';
+    var rs = st(r.id), long = (r.text || '').length > 300;
+    if (rs.m1) return '<p class="lab"><span class="tick">&#10003; Recruiter messaged.</span> If they reply, text Sam so you\'re ready for the screen.</p>';
+    return '<div class="next"><p class="lab"><b>Now message the recruiter, today.</b> ' + esc(r.name) + (r.named ? '' : ' (find whoever posted the job)') + '. If they accepted your request, send it as a message. If not, send it as a connection note' + (long ? ', using the short version (notes max out at 300 characters).' : '.') + '</p>' +
+      msgBox(r.text) + (long ? '<p class="lab">Short version for a connection note:</p>' + msgBox(r.textShort) : '') +
+      '<div class="acts">' + btn('copy', r.id, 'Copy message', false, 'text') + (long ? btn('copy', r.id, 'Copy short', false, 'textShort') : '') + ext(r.named ? 'Open LinkedIn' : 'Find recruiter', r.url) + btn('m1', r.id, 'Recruiter message sent', true) + '</div></div>';
+  }
+  function waitRow(e) {
+    if (e.it.kind === 'mgr' && PQ.repStage(st(e.it.id)) === 2) return '<div class="wrow" id="wait-' + e.it.id + '"><div><div class="n">' + esc(e.it.name) + '</div><div class="s">' + esc(e.co.name) + ' · connected, message unlocks after a rep call</div></div></div>';
+    var w = WAIT[PQ.repStage(st(e.it.id))];
+    return '<div class="wrow" id="wait-' + e.it.id + '"><div><div class="n">' + esc(e.it.name) + '</div><div class="s">' + esc(e.co.name) + ' · ' + w[0] + '</div></div>' + btn(w[1], e.it.id, w[2], false, null, true) + '</div>';
+  }
+  function coCount(items) { var d = items.filter(function (i) { return st(i.id).done; }).length; return d === items.length ? '<span class="tick">&#10003; all ' + items.length + '</span>' : d + ' of ' + items.length; }
+  function coTitle(co) { return co.n + '. ' + esc(co.name) + '<span class="score">' + esc(co.score) + '</span>' + (co.yours ? '<span class="score yours">You found it</span>' : '') + (PQ.interview(S, co) ? '<span class="iv">Interview</span>' : ''); }
+  function coInfo(co) {
+    return '<p class="co-meta">' + esc(co.loc) + ' · ' + esc(co.pay) + '</p><p class="co-why">' + esc(co.why) + '</p><div class="links">' + co.links.map(function (l) { return ext(l[0], l[1], 'lk'); }).join('') + '</div>' +
+      '<p class="lab" style="margin-top:6px">Posting shows 100+ applicants or says it\'s closing soon? Don\'t wait for the referral: apply today, then ask a rep to flag you to the manager.</p>';
+  }
+  function det(key, cls, summary, body) { return '<details class="box ' + cls + '" data-k="' + key + '"' + (OPEN[key] ? ' open' : '') + '><summary>' + summary + '</summary>' + body + '</details>'; }
+  function loomBox() {
+    return det('loom', '', 'Record your Loom <span class="r">60-90 sec, once</span>', '<div class="msg">' + marked(Q.loom) + '</div><p class="fill">Phone camera, one take. Paste the link wherever you see [Loom link].</p>');
+  }
+  function teaser() {
+    var t = PQ.tomorrow(Q, S), parts = [];
+    if (t.calls) parts.push('call ' + PQ.plural(t.calls, 'manager'));
+    if (t.names.length) parts.push(t.names.length === 1 ? t.names[0] : t.names.slice(0, -1).join(', ') + ' and ' + t.names[t.names.length - 1]);
+    if (t.bumps) parts.push('bump ' + PQ.plural(t.bumps, 'manager'));
+    if (t.applies) parts.push('apply at ' + PQ.plural(t.applies, 'company').replace('companys', 'companies'));
+    return t.empty ? 'Voice memos and replies only. Anything a rep or manager sends you, tap it here.' : parts.join(', then ').replace(/^./, function (c) { return c.toUpperCase(); }) + '.';
+  }
+
+  /* ---------- views ---------- */
+  function renderToday(t) {
+    var tot = PQ.totals(Q, S), h = '';
+    h += '<div class="stats"><div class="stat"><b>' + tot.accepted + '</b><span>Accepted</span></div><div class="stat"><b>' + tot.replies + '</b><span>Replies</span></div>' +
+         '<div class="stat"><b>' + (tot.repCalls + tot.meetings) + '</b><span>Calls</span></div><div class="stat' + (tot.interviews ? ' hot' : '') + '"><b>' + tot.interviews + '</b><span>Interviews</span></div></div>';
+    if (t.allDone || (t.total === 0 && !t.past)) {
+      h += '<div class="plain gold"><h3>' + (t.allDone ? 'Done for today.' : 'No new companies today.') + '</h3><p>' + (t.allDone ? 'Tomorrow: ' : 'Work the follow-ups below. Next up: ') + esc(teaser()) + '</p>' +
+           '<div class="acts"><button class="b" data-act="nextday">Open tomorrow\'s queue now</button></div></div>';
+    }
+    if (t.past && t.total === 0) h += '<div class="plain gold"><h3>You\'ve worked the whole list.</h3><p>Sam\'s lining up your next companies. Keep tapping follow-ups as replies come in.</p></div>';
+    if (t.d === 0 && Q.loom) h += loomBox();
+    function sec(title, sub, body) { return '<section class="sec"><h2>' + title + '</h2><p class="sub">' + sub + '</p>' + body + '</section>'; }
+    if (t.preps.length) h += sec('Interview prep', 'Prep before, thank-you after. This is what gets you the offer.', t.preps.map(function (e) { return card(e, true); }).join(''));
+    if (t.calls.length) h += sec('Calls first', 'Hiring managers. Call, then send the email right after, even if you got voicemail.', t.calls.map(function (e) { return card(e, true); }).join(''));
+    if (t.act.length) h += sec('Your move', 'These people are waiting on you.', t.act.map(function (e) { return card(e, true); }).join(''));
+    if (t.fu.length) h += sec('Voice memos', 'No reply in 2 days. One voice memo each, then let it go.', t.fu.map(function (e) { return card(e, true); }).join(''));
+    if (t.leftovers.length) h += sec('Left over', 'From earlier days. Clear these before the new ones.', t.leftovers.map(function (e) { return card(e, true); }).join(''));
+    if (t.applies.length) h += sec('Apply', 'A week in. Got a referral? Use their link. No referral? Apply directly today.', t.applies.map(function (e) { return card(e, true); }).join(''));
+    if (t.bumps.length) h += sec('Bump the managers', 'It\'s been a few days. One short update each.', t.bumps.map(function (e) { return card(e, true); }).join(''));
+    if (t.added.length) h += sec('More reps', 'The next few at companies you\'ve already started, plus any you added. Same play: connect with no note.', t.added.map(function (e) { return card(e, true); }).join(''));
+    t.newCos.forEach(function (n) {
+      h += '<section class="co"><div class="co-head"><h2>' + coTitle(n.co) + '</h2><span class="count">' + coCount(n.items) + '</span></div>' + coInfo(n.co) +
+           mgrBox(n.co) + n.items.map(function (i) { return card({ co: n.co, it: i }); }).join('') + addRepBox(n.co) + '</section>';
+    });
+    if (t.wait.length) h += sec('Waiting on them', 'Tap the moment something changes.', t.wait.map(waitRow).join(''));
+    if (!t.allDone && t.total > 0 && !t.past) h += '<div class="locked"><h3>Tomorrow</h3>' + esc(teaser()) + '</div>';
+    h += '<div class="locked"><h3>Booked an interview?</h3>Open the company in Full list and tap Interview booked. Sam sees it on his dashboard.</div>';
+    h += '<div class="locked" style="margin-top:12px"><h3>Found a company you want?</h3>Add it at the bottom of Full list. Sam checks it before it goes in your queue.' +
+         ((S.reqs || []).length ? ' <b style="color:var(--gold2)">' + S.reqs.length + ' with Sam now.</b>' : '') + '</div>';
+    return h;
+  }
+  function renderList() {
+    var h = '';
+    if (Q.pitch && Q.pitch.length) h += '<div class="plain" style="margin-top:0"><h3>Your pitch</h3>' + Q.pitch.map(function (p) { return '<p>' + marked(p) + '</p>'; }).join('') + '</div>';
+    if (Q.loom) h += loomBox();
+    var tiers = {}; Q.companies.forEach(function (c) { (tiers[c.tier] = tiers[c.tier] || []).push(c); });
+    Object.keys(tiers).sort().forEach(function (tr) {
+      var T = Q.tiers && Q.tiers[tr];
+      if (T) h += '<div class="tier"><h2>' + esc(T[0]) + '</h2><p>' + esc(T[1]) + '</p></div>';
+      tiers[tr].forEach(function (co) {
+        var iv = PQ.interview(S, co), hideBump = PQ.bumpHidden(S, co);
+        var items = co.items.filter(function (i) { return i.kind === 'prep' ? iv : !(i.kind === 'bump' && hideBump && !st(i.id).done); });
+        var sum = '<span class="nm">' + coTitle(co) + '</span><span class="r">' + coCount(items) + '</span>';
+        var ivBox = iv ? '<div class="acts"><span class="tick">&#10003; Interview booked</span>' + undo('co' + co.n) + '</div>'
+                       : '<div class="acts"><button class="b" data-act="interview" data-id="co' + co.n + '">Interview booked</button></div>';
+        h += det('co' + co.n, 'co-acc', sum, coInfo(co) + ivBox + mgrBox(co) + items.map(function (i) { return card({ co: co, it: i }); }).join('') + addRepBox(co));
+      });
+    });
+    h += addBox() + cutBox();
+    if (Q.outro) h += '<div class="locked"><h3>' + esc(Q.outro[0]) + '</h3>' + esc(Q.outro[1]) + '</div>';
+    return h;
+  }
+  function render() {
+    var t = PQ.today(Q, S);
+    view.innerHTML = VIEW === 'today' ? renderToday(t) : renderList();
+    document.getElementById('prog').hidden = VIEW !== 'today';
+    document.getElementById('prog-n').textContent = t.done + ' of ' + t.total;
+    document.getElementById('prog-t').textContent = 'Day ' + (t.d + 1) + (PQ.daySummary(t) ? ' · ' + PQ.daySummary(t) : '');
+    document.getElementById('prog-bar').style.width = (t.total ? Math.round(100 * t.done / t.total) : 0) + '%';
+  }
+
+  /* ---------- events ---------- */
+  view.addEventListener('toggle', function (e) { var k = e.target.getAttribute && e.target.getAttribute('data-k'); if (k) OPEN[k] = e.target.open; }, true);
+  view.addEventListener('input', function (e) {
+    if (e.target.id === 'add-text') DRAFT = e.target.value;
+    var co = e.target.getAttribute('data-co');
+    if (co && /mg-(name|url)/.test(e.target.className)) { var md = MGRDRAFT[co] || (MGRDRAFT[co] = {}); md[/mg-name/.test(e.target.className) ? 'name' : 'url'] = e.target.value; }
+    if (co && /ar-(name|url)/.test(e.target.className)) { var d = REPDRAFT[co] || (REPDRAFT[co] = {}); d[/ar-name/.test(e.target.className) ? 'name' : 'url'] = e.target.value; }
+  });
+  view.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]'); if (!b) return;
+    var act = b.getAttribute('data-act'), id = b.getAttribute('data-id');
+    if (act === 'copy') { var f = PQ.find(Q, id); if (f) PQ.copy(f.it[b.getAttribute('data-f')], b); return; }
+    if (RO) return;
+    if (act === 'nextday') { nextDay(); return; }
+    if (act === 'suggest') { suggest(); var y0 = window.scrollY; render(); window.scrollTo(0, y0); return; }
+    if (act === 'addrep') { addRep(Number(b.getAttribute('data-co'))); return; }
+    if (act === 'setmgr') { setMgr(Number(b.getAttribute('data-co'))); return; }
+    if (act === 'clearmgr') { setMgr(Number(b.getAttribute('data-co')), true); return; }
+    if (act === 'openmgr') { OPEN['mg' + b.getAttribute('data-co')] = true; var y1 = window.scrollY; render(); window.scrollTo(0, y1); return; }
+    if (act === 'delrep') { outbox.push({ body: { op: 'delrep', id: id } }); pump(); return; }
+    var wasDone = PQ.today(Q, S).allDone;
+    if (act === 'undo') tap(id, null, true);
+    else if (act === 'booked') tap(id, ['done', 'booked']);
+    else tap(id, [act]);
+    var y = window.scrollY; render();
+    // Finishing the last step of the day jumps to the top, where "Done for today" is.
+    window.scrollTo(0, (!wasDone && VIEW === 'today' && PQ.today(Q, S).allDone) ? 0 : y);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.tabs button'), function (b) {
+    b.addEventListener('click', function () {
+      VIEW = b.getAttribute('data-view');
+      Array.prototype.forEach.call(document.querySelectorAll('.tabs button'), function (x) { x.setAttribute('aria-selected', x === b); });
+      if (Q) { render(); window.scrollTo(0, 0); }
+    });
+  });
+  PQ.start(function (me) {
+    var tb = document.getElementById('tbar'); tb.hidden = !(me.role === 'admin' && !RO);
+    load();
+  });
+  document.getElementById('t-next').addEventListener('click', function () { PQ.api({ op: 'test.next' }).then(function () { load(); window.scrollTo(0, 0); }); });
+  document.getElementById('t-reset').addEventListener('click', function () { PQ.api({ op: 'test.reset' }).then(function () { load(); window.scrollTo(0, 0); }); });
+})();
+</script>
+</body>
+</html>
