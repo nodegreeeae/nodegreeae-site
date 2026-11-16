@@ -1,7 +1,17 @@
 # Commits that only change weeks.json (or the old jobs.json) skip the Netlify build (no publish, no credits).
-# The jobs page loads weeks.json straight from GitHub.
+# The jobs pages load weeks.json straight from GitHub.
 [build]
   ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':(exclude)weeks.json' ':(exclude)jobs.json'"
+
+# Remote list: /jobs/remote and /jobs/remote/2026-11-16 serve jobs-remote.html (own preview card).
+[[redirects]]
+  from = "/jobs/remote"
+  to = "/jobs-remote.html"
+  status = 200
+[[redirects]]
+  from = "/jobs/remote/:week"
+  to = "/jobs-remote.html"
+  status = 200
 
 # Weekly archive: /jobs/2026-11-16 serves the jobs page, which reads the week from the URL.
 [[redirects]]

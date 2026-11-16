@@ -192,5 +192,103 @@
         }
       ]
     }
+  ],
+  "remote": [
+    {
+      "id": "2026-11-16",
+      "label": "Week of Nov 16, 2026",
+      "jobs": [
+        {
+          "company": "Lightyear",
+          "score": "94.6",
+          "role": "SDR",
+          "city": "Remote US",
+          "pay": "$95-105K OTE",
+          "note": "Some outbound sales experience",
+          "url": "https://www.linkedin.com/jobs/view/4490027870"
+        },
+        {
+          "company": "Reltio",
+          "score": "88.9",
+          "role": "BDR",
+          "city": "Remote US",
+          "pay": "$50-73K",
+          "note": "1-2 yrs BDR",
+          "url": "https://job-boards.greenhouse.io/reltio/jobs/6210725004"
+        },
+        {
+          "company": "Wealthbox",
+          "score": "86.6",
+          "role": "SDR",
+          "city": "Remote US",
+          "pay": "Pay not listed",
+          "note": "",
+          "url": "https://www.linkedin.com/jobs/view/4491005243"
+        },
+        {
+          "company": "Arketa",
+          "score": "85.6",
+          "role": "SDR",
+          "city": "Remote US",
+          "pay": "$45-50K base + commission",
+          "note": "No degree needed",
+          "url": "https://www.linkedin.com/jobs/view/4490382666"
+        },
+        {
+          "company": "Deel",
+          "score": "85.2",
+          "role": "Channel SDR",
+          "city": "Remote, must be in San Francisco",
+          "pay": "$90K",
+          "note": "0-2 yrs, career changers welcome",
+          "url": "https://www.linkedin.com/jobs/view/4470893661"
+        },
+        {
+          "company": "StarRez",
+          "score": "82.5",
+          "role": "SDR",
+          "city": "Remote US",
+          "pay": "$65K",
+          "note": "1 yr B2B sales",
+          "url": "https://www.linkedin.com/jobs/view/4489163804"
+        },
+        {
+          "company": "Paddle",
+          "score": "82.0",
+          "role": "BDR",
+          "city": "Remote, Boston or Austin area",
+          "pay": "Pay not listed",
+          "note": "Some sales experience",
+          "url": "https://www.linkedin.com/jobs/view/4490692574"
+        },
+        {
+          "company": "Trimble",
+          "score": "81.0",
+          "role": "Lead Development Rep",
+          "city": "Remote US",
+          "pay": "$38-51K",
+          "note": "",
+          "url": "https://www.linkedin.com/jobs/view/4481169856"
+        },
+        {
+          "company": "GitLab",
+          "score": "80.5",
+          "role": "BDR",
+          "city": "Remote, West Coast",
+          "pay": "$74-84K",
+          "note": "Tech SDR experience required",
+          "url": "https://www.linkedin.com/jobs/view/4489126147"
+        },
+        {
+          "company": "meshIQ",
+          "score": "80.2",
+          "role": "BDR",
+          "city": "Remote US",
+          "pay": "Pay not listed",
+          "note": "0-3 yrs",
+          "url": "https://www.meshiq.com/careers/business-development-representative/"
+        }
+      ]
+    }
   ]
 }
