@@ -106,6 +106,16 @@ footer a{color:var(--muted);text-decoration:none}
 .signup .msg.ok{color:#6FCF97;font-weight:600}
 .signup .hp{position:absolute;left:-9999px}
 @media (max-width:560px){.signup button{flex:1 1 100%}}
+.list.wait{opacity:0}.list{transition:opacity .18s}
+.list{padding-bottom:24px}
+.weeks{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 40px}
+.wk-h{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--dim);margin-right:6px}
+.weeks a{font-size:13.5px;color:var(--muted);text-decoration:none;border:1px solid var(--line2);background:rgba(255,255,255,.03);border-radius:999px;padding:7px 14px;white-space:nowrap}
+.weeks a:hover{color:var(--fg);border-color:rgba(255,255,255,.28)}
+.weeks a[aria-current]{color:var(--gold2);border-color:var(--gold-line);background:var(--gold-bg);font-weight:600}
+.oldbar{margin:20px 0 -28px;border:1px solid var(--gold-line);background:var(--gold-bg);border-radius:14px;padding:12px 16px;font-size:14px;color:var(--muted);text-align:center;position:relative;z-index:1}
+.oldbar[hidden]{display:none}.oldbar b{color:var(--fg);font-weight:600}.oldbar a{color:var(--gold2);font-weight:600;white-space:nowrap}
+@media (max-width:560px){.wk-h{flex:1 1 100%}}
 :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 </style>
 </head>
@@ -116,11 +126,12 @@ footer a{color:var(--muted);text-decoration:none}
   <a class="nav-cta" href="https://calendly.com/nodegreeeae/30min" target="_blank" rel="noopener">Book a call</a>
 </div></nav>
 <main class="wrap">
+  <p class="oldbar" id="oldbar" hidden>This list is from the <b id="oldwk"></b>. Some roles may be closed. <a href="/jobs">See this week's list &rarr;</a></p>
   <header class="head">
-    <span class="pill caps" id="week">Week of Nov 10, 2026</span>
+    <span class="pill caps" id="week">Week of Nov 16, 2026</span>
     <h1>10 best SDR/BDR openings this week <span>New list every Monday.</span></h1>
-    <p>Roles posted in the last 7 days at companies their own reps rate 80+ on RepVue.</p>
-    <div class="meta"><span class="pill">Posted this week</span><span class="pill">80+ RepVue</span><span class="pill">US only</span></div>
+    <p id="sub">Roles posted in the last 7 days at companies their own reps rate 80+ on RepVue.</p>
+    <div class="meta"><span class="pill" id="posted">Posted this week</span><span class="pill">80+ RepVue</span><span class="pill">US only</span></div>
   </header>
   <form class="signup" id="signup" name="jobs-list" method="POST" action="/jobs?joined=1" data-netlify="true" netlify-honeypot="bot-field">
     <input type="hidden" name="form-name" value="jobs-list">
@@ -134,34 +145,39 @@ footer a{color:var(--muted);text-decoration:none}
   </form>
   <ol class="list" id="jobs">
     <li class="job">
-      <h3>AppFolio <span class="score">87.4</span></h3>
-      <p class="info">BDR, SMB &middot; San Diego &middot; <b>$76.5K OTE</b></p>
-      <a class="apply" href="https://www.linkedin.com/jobs/view/4480179240" target="_blank" rel="noopener">Apply</a>
+      <h3>Box <span class="score">86.4</span></h3>
+      <p class="info">BDR &middot; New York &middot; <b>$65-101.5K</b> &middot; No experience required</p>
+      <a class="apply" href="https://www.linkedin.com/jobs/view/4490543857" target="_blank" rel="noopener">Apply</a>
     </li>
     <li class="job">
-      <h3>Frontify <span class="score">86.2</span></h3>
-      <p class="info">SDR &middot; New York &middot; <b>$87.5K</b></p>
-      <a class="apply" href="https://www.linkedin.com/jobs/view/4477710319" target="_blank" rel="noopener">Apply</a>
+      <h3>Motive <span class="score">86.2</span></h3>
+      <p class="info">SDR &middot; Nashville &middot; <b>$85K</b> &middot; Degree required</p>
+      <a class="apply" href="https://www.linkedin.com/jobs/view/4452859858" target="_blank" rel="noopener">Apply</a>
     </li>
     <li class="job">
-      <h3>Workday <span class="score">86.2</span></h3>
-      <p class="info">SDR &middot; Salt Lake City &middot; <b>$44-66K base + commission</b></p>
-      <a class="apply" href="https://www.linkedin.com/jobs/view/4477323099" target="_blank" rel="noopener">Apply</a>
+      <h3>Datasite <span class="score">84.3</span></h3>
+      <p class="info">SDR &middot; Chicago &middot; <b>$52-85K</b></p>
+      <a class="apply" href="https://www.linkedin.com/jobs/view/4445523600" target="_blank" rel="noopener">Apply</a>
     </li>
     <li class="job">
-      <h3>Astronomer <span class="score">85.4</span></h3>
-      <p class="info">SDR &middot; New York, hybrid &middot; <b>$100-115K</b> &middot; 1 yr outbound</p>
-      <a class="apply" href="https://www.linkedin.com/jobs/view/4472753989" target="_blank" rel="noopener">Apply</a>
+      <h3>ServiceNow <span class="score">84.3</span></h3>
+      <p class="info">SDR &middot; Boston &middot; <b>Pay not listed</b></p>
+      <a class="apply" href="https://www.linkedin.com/jobs/view/4490527143" target="_blank" rel="noopener">Apply</a>
     </li>
     <li class="job">
-      <h3>CData <span class="score">85.0</span></h3>
-      <p class="info">SDR &middot; Chapel Hill &middot; <b>$50-60K base + commission</b> &middot; 1 yr sales</p>
-      <a class="apply" href="https://www.linkedin.com/jobs/view/4463389610" target="_blank" rel="noopener">Apply</a>
+      <h3>ZoomInfo <span class="score">83.8</span></h3>
+      <p class="info">SDR I &middot; Waltham, MA or Vancouver, WA &middot; <b>$25/hr + commission</b></p>
+      <a class="apply" href="https://www.zoominfo.com/careers?gh_jid=8494771002" target="_blank" rel="noopener">Apply</a>
     </li>
     <li class="job">
       <h3>MongoDB <span class="score">83.7</span></h3>
-      <p class="info">Enterprise SDR &middot; Boston &middot; <b>$50K base + commission</b></p>
-      <a class="apply" href="https://www.linkedin.com/jobs/view/4470477947" target="_blank" rel="noopener">Apply</a>
+      <p class="info">Enterprise SDR &middot; Austin &middot; <b>$50K base + commission</b></p>
+      <a class="apply" href="https://www.linkedin.com/jobs/view/4318181539" target="_blank" rel="noopener">Apply</a>
+    </li>
+    <li class="job">
+      <h3>Dynatrace <span class="score">83.5</span></h3>
+      <p class="info">SDR &middot; Denver &middot; <b>$90K OTE</b> &middot; Degree required</p>
+      <a class="apply" href="https://www.linkedin.com/jobs/view/4410073368" target="_blank" rel="noopener">Apply</a>
     </li>
     <li class="job">
       <h3>Atlassian <span class="score">82.8</span></h3>
@@ -170,20 +186,20 @@ footer a{color:var(--muted);text-decoration:none}
     </li>
     <li class="job">
       <h3>Elastic <span class="score">82.0</span></h3>
-      <p class="info">SDR &middot; Austin &middot; <b>$66-104K OTE</b> &middot; 1 yr SaaS</p>
-      <a class="apply" href="https://www.linkedin.com/jobs/view/4473029444" target="_blank" rel="noopener">Apply</a>
+      <p class="info">SDR &middot; New York &middot; <b>$66-104K OTE</b> &middot; 1 yr SaaS</p>
+      <a class="apply" href="https://www.linkedin.com/jobs/view/4483132862" target="_blank" rel="noopener">Apply</a>
     </li>
     <li class="job">
-      <h3>BlackLine <span class="score">81.0</span></h3>
-      <p class="info">BDR &middot; Los Angeles &middot; <b>$53-67K base + commission</b> &middot; 1 yr sales</p>
-      <a class="apply" href="https://www.linkedin.com/jobs/view/4477328645" target="_blank" rel="noopener">Apply</a>
-    </li>
-    <li class="job">
-      <h3>LinkedIn <span class="score">81.0</span></h3>
-      <p class="info">SDR 1 &middot; Chicago &middot; <b>$66-94K</b> &middot; 1 yr sales</p>
-      <a class="apply" href="https://www.linkedin.com/jobs/view/4480159373" target="_blank" rel="noopener">Apply</a>
+      <h3>Avalara <span class="score">80.1</span></h3>
+      <p class="info">SDR &middot; Durham &middot; <b>Pay not listed</b></p>
+      <a class="apply" href="https://www.linkedin.com/jobs/view/4410257133" target="_blank" rel="noopener">Apply</a>
     </li>
   </ol>
+  <section class="weeks" id="weeks" aria-label="Past weeks">
+    <span class="wk-h">Past weeks</span>
+    <a href="/jobs/2026-11-16" aria-current="page">Week of Nov 16</a>
+    <a href="/jobs/2026-11-10">Week of Nov 10</a>
+  </section>
   <section class="tip">
     <span class="pill caps">Before you hit apply</span>
     <h2>Every one of these gets hundreds of applications this week.</h2>
@@ -214,24 +230,53 @@ document.querySelectorAll('a[href*="calendly.com"]').forEach(function(a){a.addEv
 })();
 
 (function(){
-  // Live list: edit jobs.json on GitHub (commit message with [skip netlify]) - no publish needed.
-  var L=document.getElementById('jobs'),W=document.getElementById('week');if(!L||!window.fetch)return;
+  // Weekly archive. /jobs shows the newest week, /jobs/2026-11-16 shows that week.
+  // Each Monday: add the new week to the TOP of weeks.json on GitHub (commit message with [skip netlify]) - no publish needed.
+  var BAKED={"weeks":[{"id":"2026-11-16","label":"Week of Nov 16, 2026","jobs":[{"company":"Box","score":"86.4","role":"BDR","city":"New York","pay":"$65-101.5K","note":"No experience required","url":"https://www.linkedin.com/jobs/view/4490543857"},{"company":"Motive","score":"86.2","role":"SDR","city":"Nashville","pay":"$85K","note":"Degree required","url":"https://www.linkedin.com/jobs/view/4452859858"},{"company":"Datasite","score":"84.3","role":"SDR","city":"Chicago","pay":"$52-85K","note":"","url":"https://www.linkedin.com/jobs/view/4445523600"},{"company":"ServiceNow","score":"84.3","role":"SDR","city":"Boston","pay":"Pay not listed","note":"","url":"https://www.linkedin.com/jobs/view/4490527143"},{"company":"ZoomInfo","score":"83.8","role":"SDR I","city":"Waltham, MA or Vancouver, WA","pay":"$25/hr + commission","note":"","url":"https://www.zoominfo.com/careers?gh_jid=8494771002"},{"company":"MongoDB","score":"83.7","role":"Enterprise SDR","city":"Austin","pay":"$50K base + commission","note":"","url":"https://www.linkedin.com/jobs/view/4318181539"},{"company":"Dynatrace","score":"83.5","role":"SDR","city":"Denver","pay":"$90K OTE","note":"Degree required","url":"https://www.linkedin.com/jobs/view/4410073368"},{"company":"Atlassian","score":"82.8","role":"SDR","city":"Salt Lake City","pay":"$53-69K base + commission","note":"","url":"https://www.linkedin.com/jobs/view/4446387888"},{"company":"Elastic","score":"82.0","role":"SDR","city":"New York","pay":"$66-104K OTE","note":"1 yr SaaS","url":"https://www.linkedin.com/jobs/view/4483132862"},{"company":"Avalara","score":"80.1","role":"SDR","city":"Durham","pay":"Pay not listed","note":"","url":"https://www.linkedin.com/jobs/view/4410257133"}]},{"id":"2026-11-10","label":"Week of Nov 10, 2026","jobs":[{"company":"AppFolio","score":"87.4","role":"BDR, SMB","city":"San Diego","pay":"$76.5K OTE","note":"","url":"https://www.linkedin.com/jobs/view/4480179240"},{"company":"Frontify","score":"86.2","role":"SDR","city":"New York","pay":"$87.5K","note":"","url":"https://www.linkedin.com/jobs/view/4477710319"},{"company":"Workday","score":"86.2","role":"SDR","city":"Salt Lake City","pay":"$44-66K base + commission","note":"","url":"https://www.linkedin.com/jobs/view/4477323099"},{"company":"Astronomer","score":"85.4","role":"SDR","city":"New York, hybrid","pay":"$100-115K","note":"1 yr outbound","url":"https://www.linkedin.com/jobs/view/4472753989"},{"company":"CData","score":"85.0","role":"SDR","city":"Chapel Hill","pay":"$50-60K base + commission","note":"1 yr sales","url":"https://www.linkedin.com/jobs/view/4463389610"},{"company":"MongoDB","score":"83.7","role":"Enterprise SDR","city":"Boston","pay":"$50K base + commission","note":"","url":"https://www.linkedin.com/jobs/view/4470477947"},{"company":"Atlassian","score":"82.8","role":"SDR","city":"Salt Lake City","pay":"$53-69K base + commission","note":"","url":"https://www.linkedin.com/jobs/view/4446387888"},{"company":"Elastic","score":"82.0","role":"SDR","city":"Austin","pay":"$66-104K OTE","note":"1 yr SaaS","url":"https://www.linkedin.com/jobs/view/4473029444"},{"company":"BlackLine","score":"81.0","role":"BDR","city":"Los Angeles","pay":"$53-67K base + commission","note":"1 yr sales","url":"https://www.linkedin.com/jobs/view/4477328645"},{"company":"LinkedIn","score":"81.0","role":"SDR 1","city":"Chicago","pay":"$66-94K","note":"1 yr sales","url":"https://www.linkedin.com/jobs/view/4480159373"}]}]};
+  var L=document.getElementById('jobs'),W=document.getElementById('week'),P=document.getElementById('weeks'),
+      B=document.getElementById('oldbar'),H=document.querySelector('.head h1'),S=document.getElementById('sub'),PO=document.getElementById('posted');
+  if(!L)return;
+  var m=location.pathname.match(/^\/jobs\/(\d{4}-\d{2}-\d{2})\/?$/),want=m?m[1]:null;
   function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
-  fetch('https://raw.githubusercontent.com/nodegreeeae/nodegreeae-site/main/jobs.json?t='+Date.now(),{cache:'no-store'})
+  function short(l){return String(l).replace(/,\s*\d{4}$/,'');}
+  function show(d,last){
+    if(!d||!d.weeks||!d.weeks.length)return false;
+    var newest=d.weeks[0],w=null,i;
+    if(want){for(i=0;i<d.weeks.length;i++)if(d.weeks[i].id===want)w=d.weeks[i];if(!w&&!last)return false;}
+    if(!w)w=newest;
+    if(!w.jobs||!w.jobs.length)return false;
+    var old=w!==newest,f=document.createDocumentFragment();
+    w.jobs.forEach(function(j){
+      var li=el('li','job'),h=el('h3',null,j.company+' ');if(j.score)h.appendChild(el('span','score',j.score));li.appendChild(h);
+      var p=el('p','info');p.appendChild(document.createTextNode(j.role+' · '+j.city+' · '));p.appendChild(el('b',null,j.pay));
+      if(j.note)p.appendChild(document.createTextNode(' · '+j.note));li.appendChild(p);
+      var a=el('a','apply','Apply');a.href=j.url;a.target='_blank';a.rel='noopener';
+      a.addEventListener('click',function(){if(window.gtag)gtag('event','job_click',{company:j.company,week:w.id});});
+      li.appendChild(a);f.appendChild(li);
+    });
+    L.innerHTML='';L.appendChild(f);
+    if(W)W.textContent=w.label;
+    if(H&&H.firstChild)H.firstChild.nodeValue=w.jobs.length+' best SDR/BDR openings'+(old?', '+short(w.label).replace(/^W/,'w'):' this week')+' ';
+    if(S)S.textContent='Roles posted '+(old?'that week':'in the last 7 days')+' at companies their own reps rate 80+ on RepVue.';
+    if(PO)PO.textContent=old?'Posted '+short(w.label).replace(/^W/,'w'):'Posted this week';
+    if(B){B.hidden=!old;var o=document.getElementById('oldwk');if(o)o.textContent=short(w.label).replace(/^W/,'w');}
+    document.title=old?'SDR Jobs, '+w.label+' | No Degree AE':'SDR Jobs This Week | No Degree AE';
+    if(P){
+      var g=document.createDocumentFragment();g.appendChild(el('span','wk-h','Past weeks'));
+      d.weeks.forEach(function(x){var a=el('a',null,short(x.label));a.href='/jobs/'+x.id;if(x===w)a.setAttribute('aria-current','page');g.appendChild(a);});
+      P.innerHTML='';P.appendChild(g);P.hidden=d.weeks.length<2;
+    }
+    return true;
+  }
+  var inBaked=show(BAKED,false);
+  if(!window.fetch){show(BAKED,true);return;}
+  // /jobs waits for the live file (the baked copy may be a week behind). A past week that is baked in shows right away.
+  var t=null;function reveal(){L.classList.remove('wait');if(t){clearTimeout(t);t=null;}}
+  if(!want||!inBaked){L.classList.add('wait');t=setTimeout(function(){show(BAKED,true);reveal();},2000);}
+  fetch('https://raw.githubusercontent.com/nodegreeeae/nodegreeae-site/main/weeks.json?t='+Date.now(),{cache:'no-store'})
     .then(function(r){if(!r.ok)throw 0;return r.json();})
-    .then(function(d){
-      if(!d||!d.jobs||!d.jobs.length)return;
-      var f=document.createDocumentFragment();
-      d.jobs.forEach(function(j){
-        var li=el('li','job'),h=el('h3',null,j.company+' ');h.appendChild(el('span','score',j.score));li.appendChild(h);
-        var p=el('p','info');p.appendChild(document.createTextNode(j.role+' · '+j.city+' · '));p.appendChild(el('b',null,j.pay));
-        if(j.note)p.appendChild(document.createTextNode(' · '+j.note));li.appendChild(p);
-        var a=el('a','apply','Apply');a.href=j.url;a.target='_blank';a.rel='noopener';
-        a.addEventListener('click',function(){if(window.gtag)gtag('event','job_click',{company:j.company});});
-        li.appendChild(a);f.appendChild(li);
-      });
-      L.innerHTML='';L.appendChild(f);if(d.week&&W)W.textContent=d.week;
-    }).catch(function(){});
+    .then(function(d){if(!show(d,true))show(BAKED,true);reveal();})
+    .catch(function(){show(BAKED,true);reveal();});
 })();
 </script>
 <script>
