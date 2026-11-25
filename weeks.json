@@ -1,6 +1,102 @@
 {
   "weeks": [
     {
+      "id": "2026-11-23",
+      "label": "Week of Nov 23, 2026",
+      "jobs": [
+        {
+          "company": "incident.io",
+          "score": "92.3",
+          "role": "Enterprise BDR",
+          "city": "New York",
+          "pay": "$100-110K",
+          "note": "",
+          "url": "https://www.linkedin.com/jobs/view/4492356868"
+        },
+        {
+          "company": "Plaid",
+          "score": "90.8",
+          "role": "BDR",
+          "city": "SF / New York",
+          "pay": "$92-107K",
+          "note": "1-3 yrs experience, degree",
+          "url": "https://www.linkedin.com/jobs/view/4492228871"
+        },
+        {
+          "company": "MaintainX",
+          "score": "90.4",
+          "role": "BDR",
+          "city": "Denver",
+          "pay": "$87.5-96.5K OTE",
+          "note": "Bachelor's degree",
+          "url": "https://www.linkedin.com/jobs/view/4484813693"
+        },
+        {
+          "company": "Cresta",
+          "score": "90.0",
+          "role": "SDR",
+          "city": "New York",
+          "pay": "$96-125K OTE",
+          "note": "1+ yr experience",
+          "url": "https://www.linkedin.com/jobs/view/4441410703"
+        },
+        {
+          "company": "Gong",
+          "score": "87.0",
+          "role": "SDR",
+          "city": "Salt Lake City",
+          "pay": "$90K OTE",
+          "note": "",
+          "url": "https://www.linkedin.com/jobs/view/4381178953"
+        },
+        {
+          "company": "Braze",
+          "score": "86.7",
+          "role": "BDR",
+          "city": "Austin / Chicago",
+          "pay": "$75-90K OTE",
+          "note": "6+ months experience",
+          "url": "https://www.linkedin.com/jobs/view/4432815328"
+        },
+        {
+          "company": "Attio",
+          "score": "84.9",
+          "role": "SDR",
+          "city": "San Francisco",
+          "pay": "$80-100K",
+          "note": "",
+          "url": "https://www.linkedin.com/jobs/view/4469235479"
+        },
+        {
+          "company": "ServiceNow",
+          "score": "84.0",
+          "role": "BDR",
+          "city": "San Diego",
+          "pay": "$65-94K base",
+          "note": "",
+          "url": "https://www.linkedin.com/jobs/view/4492723537"
+        },
+        {
+          "company": "Brex",
+          "score": "84.0",
+          "role": "Outbound SDR",
+          "city": "SLC / SF",
+          "pay": "$73-93K OTE",
+          "note": "",
+          "url": "https://www.linkedin.com/jobs/view/4468234612"
+        },
+        {
+          "company": "OpenTable",
+          "score": "83.7",
+          "role": "SDR",
+          "city": "Chicago (hybrid)",
+          "pay": "$55-65K + bonus",
+          "note": "",
+          "url": "https://www.linkedin.com/jobs/view/4486325796"
+        }
+      ]
+    },
+    {
       "id": "2026-11-16",
       "label": "Week of Nov 16, 2026",
       "jobs": [
@@ -194,6 +290,102 @@
     }
   ],
   "remote": [
+    {
+      "id": "2026-11-23",
+      "label": "Week of Nov 23, 2026",
+      "jobs": [
+        {
+          "company": "Element451",
+          "score": "95.0",
+          "role": "BDR",
+          "city": "Remote US",
+          "pay": "",
+          "note": "1+ yr experience",
+          "url": "https://www.linkedin.com/jobs/view/4493687326"
+        },
+        {
+          "company": "Medius",
+          "score": "88.7",
+          "role": "BDR",
+          "city": "Remote US",
+          "pay": "$80K",
+          "note": "",
+          "url": "https://www.linkedin.com/jobs/view/4492515302"
+        },
+        {
+          "company": "Oscilar",
+          "score": "87.6",
+          "role": "BDR",
+          "city": "Remote US",
+          "pay": "",
+          "note": "1-2 yrs experience",
+          "url": "https://www.linkedin.com/jobs/view/4400692180"
+        },
+        {
+          "company": "Workiva",
+          "score": "86.4",
+          "role": "SDR",
+          "city": "Remote US",
+          "pay": "",
+          "note": "Associate's + experience",
+          "url": "https://www.linkedin.com/jobs/view/4476214080"
+        },
+        {
+          "company": "Virtuous",
+          "score": "85.3",
+          "role": "SDR",
+          "city": "Remote US",
+          "pay": "",
+          "note": "",
+          "url": "https://www.linkedin.com/jobs/view/4492835954"
+        },
+        {
+          "company": "Bloomerang",
+          "score": "85.3",
+          "role": "Outbound BDR",
+          "city": "Remote US",
+          "pay": "$75K",
+          "note": "1+ yr experience",
+          "url": "https://www.linkedin.com/jobs/view/4480686816"
+        },
+        {
+          "company": "Deel",
+          "score": "85.0",
+          "role": "SDR, North America",
+          "city": "Remote US",
+          "pay": "$80K",
+          "note": "",
+          "url": "https://www.linkedin.com/jobs/view/4455897444"
+        },
+        {
+          "company": "Fieldwire",
+          "score": "84.9",
+          "role": "SDR",
+          "city": "Remote US",
+          "pay": "$45-51K base",
+          "note": "0-2 yrs experience",
+          "url": "https://www.linkedin.com/jobs/view/4478144926"
+        },
+        {
+          "company": "Replicant",
+          "score": "83.0",
+          "role": "SDR",
+          "city": "Remote US",
+          "pay": "",
+          "note": "",
+          "url": "https://www.linkedin.com/jobs/view/4494675549"
+        },
+        {
+          "company": "Fundraise Up",
+          "score": "81.1",
+          "role": "BDR",
+          "city": "Remote US",
+          "pay": "$80-115K",
+          "note": "",
+          "url": "https://www.linkedin.com/jobs/view/4492531032"
+        }
+      ]
+    },
     {
       "id": "2026-11-16",
       "label": "Week of Nov 16, 2026",
